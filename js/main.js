@@ -640,7 +640,92 @@
     svg.innerHTML = out;
   }
 
+  /* ---------- Intro: the wordmark turns to dust (once per session) ---------- */
+  function initIntro() {
+    var root = document.documentElement;
+    if (!root.classList.contains("intro-pending")) return;
+    try { sessionStorage.setItem("professio.intro", "1"); } catch (e) {}
+    var css = $('link[href$="css/style.css"]');
+    var src = new URL("../images/brand/wordmark.png", css ? css.href : location.href).href;
+    var cover = document.createElement("div");
+    cover.className = "intro"; cover.setAttribute("aria-hidden", "true");
+    cover.innerHTML = '<canvas></canvas><span class="intro-skip">' + (matchMedia("(hover: hover)").matches ? "Click to enter" : "Tap to enter") + "</span>";
+    document.body.appendChild(cover);
+    root.classList.remove("intro-pending");
+    root.classList.add("intro-active");
+
+    var canvas = $("canvas", cover), ctx = canvas.getContext("2d");
+    var dpr = Math.min(window.devicePixelRatio || 1, 2), W, H, done = false, raf;
+    function size() { W = innerWidth; H = innerHeight; canvas.width = W * dpr; canvas.height = H * dpr; canvas.style.width = W + "px"; canvas.style.height = H + "px"; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+    size();
+
+    function finish(fast) {
+      if (done) return; done = true;
+      cover.classList.add(fast ? "is-leaving-fast" : "is-leaving");
+      root.classList.remove("intro-active");
+      setTimeout(function () { cancelAnimationFrame(raf); cover.remove(); }, fast ? 450 : 1100);
+    }
+    cover.addEventListener("click", function () { finish(true); });
+    document.addEventListener("keydown", function () { finish(true); }, { once: true });
+    setTimeout(function () { finish(false); }, 5200); // safety net
+
+    var img = new Image();
+    img.onerror = function () { finish(true); };
+    img.onload = function () {
+      var lw = Math.min(W * 0.82, 920), lh = lw * img.height / img.width;
+      var lx = (W - lw) / 2, ly = (H - lh) / 2;
+      // tint the wordmark cream-gold on an offscreen canvas
+      var off = document.createElement("canvas"), oc = off.getContext("2d");
+      off.width = Math.round(lw); off.height = Math.round(lh);
+      oc.drawImage(img, 0, 0, off.width, off.height);
+      oc.globalCompositeOperation = "source-in"; oc.fillStyle = "#E9D9BC"; oc.fillRect(0, 0, off.width, off.height);
+
+      var parts = [], data, gap = W < 700 ? 2 : 3;
+      try { data = oc.getImageData(0, 0, off.width, off.height).data; } catch (e) { data = null; }
+      if (data) {
+        for (var y = 0; y < off.height; y += gap) for (var x = 0; x < off.width; x += gap) {
+          var a = data[(y * off.width + x) * 4 + 3];
+          if (a > 90) parts.push({
+            x: lx + x, y: ly + y, a: a / 255,
+            vx: 0.6 + Math.random() * 1.8, vy: -(0.2 + Math.random() * 1.1),
+            delay: (x / off.width) * 0.75 + Math.random() * 0.25, s: Math.random() < 0.15 ? 2 : 1.2
+          });
+        }
+      }
+
+      var start = performance.now(), HOLD = 1300, FADEIN = 700, DUST = 1900;
+      function frame(now) {
+        if (done && cover.classList.contains("is-leaving-fast")) return;
+        var t = now - start;
+        ctx.clearRect(0, 0, W, H);
+        if (t < HOLD || !data) {
+          ctx.globalAlpha = Math.min(1, t / FADEIN);
+          ctx.drawImage(off, lx, ly, lw, lh);
+          if (!data && t > HOLD) { finish(false); return; }
+        } else {
+          var k = (t - HOLD) / DUST; // 0..1
+          ctx.fillStyle = "#E9D9BC";
+          for (var i = 0; i < parts.length; i++) {
+            var p = parts[i], local = Math.max(0, k * 1.6 - p.delay);
+            if (local <= 0) { ctx.globalAlpha = p.a; ctx.fillRect(p.x, p.y, gap, gap); continue; }
+            var e = local * local * 60;
+            var alpha = p.a * Math.max(0, 1 - local * 1.15);
+            if (alpha <= 0) continue;
+            ctx.globalAlpha = alpha;
+            ctx.fillRect(p.x + p.vx * e + Math.sin((p.y + e) * 0.05) * local * 6, p.y + p.vy * e, p.s, p.s);
+          }
+          if (k > 0.55) finish(false);
+          if (k >= 1.3) return;
+        }
+        raf = requestAnimationFrame(frame);
+      }
+      raf = requestAnimationFrame(frame);
+    };
+    img.src = src;
+  }
+
   /* ---------- Boot ---------- */
+  initIntro();
   initHeroSlides();
   initRidge();
   initLayout();
