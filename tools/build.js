@@ -16,7 +16,7 @@ const SITE = "https://professiorugs.com";
 const TODAY = new Date().toISOString().slice(0, 10);
 
 // Paste verification codes here when Google Search Console or Bing ask for an HTML tag.
-const VERIFY = { google: "", bing: "" };
+const VERIFY = { google: "6cEMGBcEvDjib5KfCX70PS2WYArBzTevZWzxzoDOCMc", bing: "" };
 
 global.window = {};
 require(path.join(ROOT, "js/products.js"));
