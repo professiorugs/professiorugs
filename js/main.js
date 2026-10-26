@@ -56,6 +56,12 @@
   }
   function removeFromCollection(id) { writeCollection(readCollection().filter(function (x) { return x !== id; })); }
 
+  /* ---------- Correspondence ---------- */
+  // Enquiries and sign-ups post here once a Formspree form exists (same ID as the action in trade/index.html).
+  // Until then each form opens a ready-written email to INBOX, so nothing is lost.
+  var INBOX = "info@professiorugs.com";
+  var FORM_ACTION = "https://formspree.io/f/YOUR_FORM_ID";
+
   /* ---------- Layout: header, footer, drawer ---------- */
   var NAV = [
     ["/rugs/", "Collection", "shop"],
@@ -75,7 +81,7 @@
         '<a href="/" class="logo" aria-label="Professio, home"></a>' +
         '<nav class="nav nav--right" aria-label="Account">' +
           '<a class="hide-m" href="/trade/"' + (page === "trade" ? ' aria-current="page"' : "") + ">Trade Portal</a>" +
-          '<button id="openDrawer" aria-label="Open your collection">Collection<span class="bag-count" id="bagCount"></span></button>' +
+          '<button id="openDrawer" aria-label="Open your collection"><span class="hide-m">Your </span>Collection<span class="bag-count" id="bagCount"></span></button>' +
         "</nav>" +
       "</div>" +
       '<span class="thread-progress" id="threadProgress" aria-hidden="true"></span>' +
@@ -94,7 +100,7 @@
           "<div>" +
             '<span class="eyebrow">Correspondence</span>' +
             '<p class="lede" style="max-width:420px">Private viewings, new arrivals and stories from the loom, a few times a year.</p>' +
-            '<form class="newsletter" data-form="newsletter"><label class="sr-only" for="nl">Email</label><input id="nl" type="email" required placeholder="Your email address"><button type="submit">Subscribe</button></form>' +
+            '<form class="newsletter" data-form="newsletter" action="' + FORM_ACTION + '" method="POST"><input type="hidden" name="_subject" value="Correspondence list"><label class="sr-only" for="nl">Email</label><input id="nl" name="email" type="email" required autocomplete="email" placeholder="Your email address"><button type="submit">Subscribe</button></form>' +
           "</div>" +
           '<div><h5>The House</h5><ul><li><a href="/our-story/">Our Story</a></li><li><a href="/heritage/">Heritage &amp; Origins</a></li><li><a href="/our-story/#certificate">Certificate of Authenticity</a></li><li><a href="/silk-rug-guide/">Silk Rug Buying Guide</a></li><li><a href="/heritage/#hereke">The Story of Hereke</a></li></ul></div>' +
           '<div><h5>Collection</h5><ul><li><a href="/rugs/">All Pieces</a></li><li><a href="/rugs/?category=Hereke%20Silk">Hereke Silk Rugs</a></li><li><a href="/rugs/?category=Kayseri%20Silk">Kayseri Silk Rugs</a></li><li><a href="/rugs/?type=Wall%20carpet">Tabriz Wall Carpets</a></li><li><a href="/rugs/?category=Persian%20Miniature">Persian Miniature</a></li></ul></div>' +
@@ -144,9 +150,9 @@
   }
   function openDrawer() { document.body.classList.add("drawer-open"); $("#drawer").setAttribute("aria-hidden", "false"); }
   function closeDrawer() { document.body.classList.remove("drawer-open"); $("#drawer").setAttribute("aria-hidden", "true"); }
-  function toast(msg) {
+  function toast(msg, ms) {
     var t = $("#toast"); t.textContent = msg; t.classList.add("show");
-    clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove("show"); }, 2600);
+    clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove("show"); }, ms || 2600);
   }
 
   function initLayout() {
@@ -178,14 +184,14 @@
     var els = $$(".reveal");
     $$(".product-grid, .pillars, .materials, .hereke-facts").forEach(function (g) {
       $$(".reveal", g).forEach(function (el, i) {
-        el.style.transitionDelay = (i % 3) * 120 + "ms";
-        el.style.setProperty("--wd", (0.2 + (i % 3) * 0.16).toFixed(2) + "s"); // woven photo follows the card
+        el.style.transitionDelay = (i % 3) * 60 + "ms";
+        el.style.setProperty("--wd", (0.05 + (i % 3) * 0.07).toFixed(2) + "s"); // woven photo follows the card
       });
     });
     if (!("IntersectionObserver" in window)) { els.forEach(function (e) { e.classList.add("in"); }); return; }
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } });
-    }, { rootMargin: "0px 0px -8% 0px" });
+    }, { rootMargin: "0px 0px -4% 0px" });
     els.forEach(function (e) { io.observe(e); });
   }
 
@@ -219,7 +225,7 @@
       var io = new IntersectionObserver(function (es) {
         if (!es[0].isIntersecting) return;
         io.disconnect(); counted[to] = true;
-        var t0 = performance.now(), dur = 2600;
+        var t0 = performance.now(), dur = 1800;
         (function step(now) {
           var u = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - u, 4);
           el.textContent = fmt(to * e);
@@ -739,22 +745,65 @@
     $$("form[data-form]").forEach(function (f) {
       f.addEventListener("submit", function (e) {
         var action = f.getAttribute("action") || "";
-        if (f.dataset.form === "newsletter" || !/^https?:/.test(action) || action.indexOf("YOUR_FORM_ID") > -1) {
-          // No endpoint configured yet: confirm locally (see README to connect Formspree).
-          e.preventDefault();
-          if (f.dataset.form === "newsletter") { f.reset(); toast("Thank you. You are on the list."); return; }
-          showSuccess(f);
-          return;
-        }
         e.preventDefault();
+        if (!/^https?:/.test(action) || action.indexOf("YOUR_FORM_ID") > -1) { byEmail(f); return; }
         fetch(action, { method: "POST", body: new FormData(f), headers: { Accept: "application/json" } })
-          .then(function (r) { if (!r.ok) throw 0; showSuccess(f); })
-          .catch(function () { toast("Something went wrong. Please write to info@professiorugs.com"); });
+          .then(function (r) { if (!r.ok) throw 0; sent(f); })
+          .catch(function () { byEmail(f); });
       });
     });
-    function showSuccess(f) {
+    function sent(f) {
+      if (f.dataset.form === "newsletter") { f.reset(); toast("Thank you. You are on the list."); return; }
       f.hidden = true; var s = $("#formSuccess"); if (s) { s.classList.add("show"); s.scrollIntoView({ behavior: "smooth", block: "center" }); }
       if (($('input[name="inquiry_type"]:checked') || {}).value === "acquire") writeCollection([]);
+    }
+
+    // No form service yet (or it failed): hand the enquiry to the visitor's own email, written out in full.
+    var LABELS = { inquiry_type: "Enquiry", name: "Name", email: "Email", country: "Country", phone: "Telephone", company: "Company", business_type: "Business", website: "Website", volume: "Expected volume", pieces: "Pieces of interest", viewing: "Viewing", commission_style: "Subject or style", commission_size: "Dimensions", commission_material: "Material", commission_timeline: "Timeline", message: "Message" };
+    var KINDS = { acquire: "Private acquisition", trade: "Trade & wholesale", commission: "Custom commission" };
+    function letter(f) {
+      if (f.dataset.form === "newsletter") {
+        return { subject: "Correspondence list", body: "Please add me to the Professio correspondence list.\r\n\r\nEmail: " + $('[name="email"]', f).value.trim() };
+      }
+      var kind = ($('input[name="inquiry_type"]:checked', f) || {}).value, lines = [];
+      $$("input, select, textarea", f).forEach(function (el) {
+        if (!el.name || el.name.charAt(0) === "_" || el.closest("[hidden]") || (el.type === "radio" && !el.checked)) return;
+        var v = String(el.value || "").trim(); if (!v) return;
+        if (el.name === "message") lines.push("", LABELS.message + ":", v);
+        else lines.push((LABELS[el.name] || el.name) + ": " + (el.name === "inquiry_type" ? KINDS[v] || v : v));
+      });
+      var who = (($('[name="name"]', f) || {}).value || "").trim();
+      return { subject: (KINDS[kind] || "Enquiry") + (who ? ", " + who : ""), body: lines.join("\r\n") };
+    }
+    function byEmail(f) {
+      var m = letter(f), body = m.body;
+      var link = function (b) { return "mailto:" + INBOX + "?subject=" + encodeURIComponent(m.subject) + "&body=" + encodeURIComponent(b); };
+      // keep the link short enough for every mail app; the copy button carries the full text
+      while (link(body).length > 1900 && body.length > 200) body = body.slice(0, -100).replace(/[\uD800-\uDBFF]$/, "");
+      if (body !== m.body) body += " […]";
+      location.href = link(body);
+      if (f.dataset.form === "newsletter") { f.reset(); toast("Press send in the email that opens, and you are on the list.", 6000); return; }
+      var s = $("#formSuccess"); if (!s) return;
+      f.hidden = true;
+      s.innerHTML =
+        '<span class="eyebrow">One last step</span>' +
+        "<h2>Press send.</h2>" +
+        '<p class="lede" style="margin-top:18px">Your email app should now be open with your enquiry written out to ' + INBOX + ". Send it and a member of the family will reply personally within one business day.</p>" +
+        '<p class="small" style="margin-top:22px">Nothing opened? Copy your enquiry and send it to ' + INBOX + " from any email account.</p>" +
+        '<div class="form-success-actions"><a class="btn btn--solid" href="' + esc(link(body)) + '">Open the email again</a><button class="btn" type="button" data-copy>Copy my enquiry</button></div>' +
+        '<button class="link-arrow" type="button" data-edit>Edit my enquiry</button>';
+      s.classList.add("show"); s.scrollIntoView({ behavior: "smooth", block: "center" });
+      $("[data-copy]", s).addEventListener("click", function () {
+        var b = this, text = "To: " + INBOX + "\nSubject: " + m.subject + "\n\n" + m.body.replace(/\r\n/g, "\n");
+        var done = function () { b.textContent = "Copied"; toast("Copied. Paste it into a new email to " + INBOX, 5000); };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () { fallbackCopy(text); done(); });
+        else { fallbackCopy(text); done(); }
+      });
+      $("[data-edit]", s).addEventListener("click", function () { s.classList.remove("show"); f.hidden = false; f.scrollIntoView({ behavior: "smooth", block: "start" }); });
+    }
+    function fallbackCopy(text) {
+      var t = document.createElement("textarea"); t.value = text; t.setAttribute("readonly", ""); t.style.cssText = "position:fixed;opacity:0";
+      document.body.appendChild(t); t.select(); try { document.execCommand("copy"); } catch (e) {} t.remove();
     }
   }
 
@@ -1033,7 +1082,7 @@
     if (reduceMotion || !tilt || !img || !ctx) return;
     var fr = (el.getAttribute("data-fringe") || "0 1").split(" ").map(Number);
     var src = document.createElement("canvas"), sctx = src.getContext("2d");
-    var W = 0, H = 0, PAD = 0, live = false, seen = true, raf = 0, last = 0, t = 0, hover = 0, hoverTo = 0;
+    var W = 0, H = 0, PAD = 0, live = false, seen = true, raf = 0, last = 0, t = 0, hover = 0, hoverTo = 0, key, vig;
     cv.className = "flyer-canvas";
     tilt.appendChild(cv);
 
@@ -1050,6 +1099,11 @@
       src.width = W; src.height = H;
       sctx.imageSmoothingQuality = "high";
       sctx.drawImage(img, 0, 0, W, H);
+      // soft studio light: warm from the upper left, easing off toward the far corners
+      key = ctx.createRadialGradient(W * 0.3, PAD + H * 0.15, 0, W * 0.3, PAD + H * 0.15, W * 0.85);
+      key.addColorStop(0, "rgba(255,236,206,.08)"); key.addColorStop(1, "rgba(255,236,206,0)");
+      vig = ctx.createRadialGradient(W * 0.45, PAD + H * 0.45, W * 0.3, W * 0.45, PAD + H * 0.45, W * 0.8);
+      vig.addColorStop(0, "rgba(20,11,6,0)"); vig.addColorStop(1, "rgba(20,11,6,.18)");
       return true;
     }
     // how far the cloth is lifted at u (0 to 1 along the length), in device pixels; down is positive
@@ -1080,16 +1134,18 @@
       for (i = 0; i <= 24; i++) {
         u = i / 24;
         s = Math.max(-1.4, Math.min(1.4, (lift(u + 0.004, a, 0) - lift(u - 0.004, a, 0)) / (0.008 * W) / k));
-        lit.addColorStop(u, "rgba(255,240,214," + (Math.max(0, -s) * 0.1).toFixed(3) + ")");
-        shade.addColorStop(u, "rgba(26,14,8," + (Math.max(0, s) * 0.16).toFixed(3) + ")");
+        lit.addColorStop(u, "rgba(255,240,214," + (Math.max(0, -s) * 0.06).toFixed(3) + ")");
+        shade.addColorStop(u, "rgba(26,14,8," + (Math.max(0, s) * 0.09).toFixed(3) + ")");
       }
       ctx.fillStyle = shade; ctx.fillRect(0, 0, W, H + 2 * PAD);
       ctx.fillStyle = lit; ctx.fillRect(0, 0, W, H + 2 * PAD);
+      ctx.fillStyle = key; ctx.fillRect(0, 0, W, H + 2 * PAD);
+      ctx.fillStyle = vig; ctx.fillRect(0, 0, W, H + 2 * PAD);
       // a band of light crosses the silk over four seconds, every thirteen
       var ph = ((t + 9) % 13) / 4.2;
       if (ph < 1) {
-        var e = ph * ph * (3 - 2 * ph), cx = (-0.3 + 1.6 * e) * W, g = ctx.createLinearGradient(cx - 0.17 * W, -0.06 * W, cx + 0.17 * W, 0.06 * W);
-        g.addColorStop(0, "rgba(255,241,214,0)"); g.addColorStop(0.5, "rgba(255,241,214,.13)"); g.addColorStop(1, "rgba(255,241,214,0)");
+        var e = ph * ph * (3 - 2 * ph), cx = (-0.3 + 1.6 * e) * W, g = ctx.createLinearGradient(cx - 0.22 * W, -0.07 * W, cx + 0.22 * W, 0.07 * W);
+        g.addColorStop(0, "rgba(255,241,214,0)"); g.addColorStop(0.5, "rgba(255,241,214,.09)"); g.addColorStop(1, "rgba(255,241,214,0)");
         ctx.fillStyle = g; ctx.fillRect(0, 0, W, H + 2 * PAD);
       }
       ctx.globalCompositeOperation = "source-over";

@@ -70,7 +70,7 @@ const graph = (...nodes) => ld({ "@context": "https://schema.org", "@graph": nod
 
 /* ---------- <head> ---------- */
 // Rug pages: keep the main photo hidden until it can unroll (js/main.js), with a safety timeout.
-const UNROLL = '<script>try{if(!matchMedia("(prefers-reduced-motion: reduce)").matches){var d=document.documentElement;d.classList.add("unroll-pending");setTimeout(function(){d.classList.remove("unroll-pending")},4000)}}catch(e){}</script>';
+const UNROLL = '<script>try{if(!matchMedia("(prefers-reduced-motion: reduce)").matches){var d=document.documentElement;d.classList.add("unroll-pending");setTimeout(function(){d.classList.remove("unroll-pending")},2500)}}catch(e){}</script>';
 const INTRO = '<script>try{if((/[?&]intro\\b/.test(location.search)||!sessionStorage.getItem("professio.intro"))&&!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("intro-pending")}catch(e){}</script>';
 
 function head(o) {

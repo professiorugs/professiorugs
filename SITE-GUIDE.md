@@ -45,10 +45,12 @@ A rug's address comes from its title and origin: "Midnight Bloom" from Hereke be
 ## The flying carpet
 The rug with `flagship: true` in `js/products.js` floats on the home page and on its own page. `flyer` points to a straightened, landscape cut-out of the rug with a transparent background and its fringe on the short ends (`images/collection/midnight-bloom-flight.webp`), and `flyerSize` gives its pixel size. A slow wave rolls along the cloth and the fringe stirs, both a little more under the mouse, and gold sparkles follow the pointer. The wave is painted on a canvas from the same photograph (`waveFlyer` in `js/main.js`); visitors with "reduce motion" see the still photograph. `data-fringe` on the `.flyer` element says where the fringe begins on each short end, as a share of the length (`0.054 0.954` for the current cut-out); change it if a new cut-out has a longer or shorter fringe.
 
+The cut-out is trimmed to the rug's own dark outer edge, with no floor from the original photograph left along its sides. The light on it is soft and warm from the upper left: a wide glow behind (`.flagship-glow`, `.flyer-aura`), a soft diffuse shadow below (`.flyer-shadow`), and on the canvas a gentle key light, a light vignette and a slow silk sheen (the `key`, `vig` and sheen gradients in `waveFlyer`).
+
 ## Motion
 All motion is slow and switches off for visitors who choose "reduce motion":
-1. Rug photos in the grids appear row by row as a thin gold thread passes down them.
-2. On a rug page the main photo unrolls from the top.
+1. Rug photos in the grids appear row by row as a thin gold thread passes down them, in about a second, starting as soon as a card is on screen.
+2. On a rug page the main photo unrolls from the top in about a second.
 3. The flying carpet's cloth waves slowly and its fringe stirs, a little more on hover, and gold sparkles follow the mouse.
 4. A short gold thread draws itself under section titles.
 5. A soft candle glow flickers in the Cappadocia section on the home page.
@@ -64,7 +66,9 @@ The wordmark intro plays on the home page once per browser tab session (`session
 3. Bing Webmaster Tools (https://www.bing.com/webmasters): sign in and choose **Import from Google Search Console**, or verify with `VERIFY.bing`.
 
 ## Forms
-`trade/index.html` posts to `https://formspree.io/f/YOUR_FORM_ID`. Create a free form at formspree.io and replace `YOUR_FORM_ID` with the real ID. Until then the form shows its thank-you message without sending anything.
+The enquiry form (`trade/index.html`) and the newsletter box in the footer both post to Formspree once a form exists. Create a free form at formspree.io, then replace `YOUR_FORM_ID` with its ID in two places: the form's `action` in `trade/index.html` and `FORM_ACTION` near the top of `js/main.js`. Run the builder.
+
+Until then, and whenever Formspree cannot be reached, nothing is lost: pressing **Send Enquiry** opens the visitor's own email app with the enquiry written out to info@professiorugs.com (subject, name, email and every field they filled in), and the page asks them to press send. If no email app opens, they can copy the enquiry with one button and send it from any account. The newsletter box does the same with a short "please add me" email. So info@professiorugs.com must forward to an inbox you read: set this up under Email Forwarding at Porkbun and test it by sending yourself a message.
 
 ## Films
 In `heritage/index.html`, add `data-youtube="VIDEO_ID"` or `data-vimeo="VIDEO_ID"` to each `.film` element.
@@ -73,6 +77,8 @@ In `heritage/index.html`, add `data-youtube="VIDEO_ID"` or `data-vimeo="VIDEO_ID
 Product images are in `images/collection/`. Etsy pieces load their photos from Etsy's image server, and **Acquire Piece** opens the Etsy listing. When a piece sells, delete its entry (or remove its `etsy` field) and run the builder.
 
 The share image (`images/brand/og-image.jpg`) and the square logo are rendered from `tools/og.html` and `tools/logo.html`.
+
+The knot close-up on the home page is `images/heritage/knot-detail.jpg`, a 1440 × 900 crop of `knot-map.jpg` (the full 3000 px image stays for Heritage & Origins and the knot zoomer). It is about a quarter of the weight.
 
 ## Local preview
 ```
