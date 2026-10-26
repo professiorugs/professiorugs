@@ -31,6 +31,16 @@
       ? "$" + Math.round(p.price).toLocaleString("en-US")
       : "Price upon request";
   }
+  function town(p) { return (p.origin || "").split(",")[0]; }
+  // "Hereke silk rug", "Kayseri silk rug", "Tabriz wall carpet"
+  function kindText(p) {
+    var t = town(p) ? town(p) + " " : "";
+    return p.type === "Wall carpet" ? t + "wall carpet" : t + (/silk/i.test(p.materials || "") ? "silk rug" : "rug");
+  }
+  // total knots at the stated density (10 × 10 per cm over 110 × 75 cm = 825,000) and the trade name
+  function knotTotal(p) { return (window.PROFESSIO_KNOTS(p) || {}).total || null; }
+  function knotNote(p) { return (window.PROFESSIO_KNOTS(p) || {}).note || null; }
+  var reduceMotion = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
   var slug = window.PROFESSIO_SLUG;
   function rugUrl(p) { return "/rugs/" + slug(p) + "/"; }
   function byId(id) { for (var i = 0; i < PRODUCTS.length; i++) if (PRODUCTS[i].id === id) return PRODUCTS[i]; return null; }
@@ -86,11 +96,11 @@
             '<p class="lede" style="max-width:420px">Private viewings, new arrivals and stories from the loom, a few times a year.</p>' +
             '<form class="newsletter" data-form="newsletter"><label class="sr-only" for="nl">Email</label><input id="nl" type="email" required placeholder="Your email address"><button type="submit">Subscribe</button></form>' +
           "</div>" +
-          '<div><h5>The House</h5><ul><li><a href="/our-story/">Our Story</a></li><li><a href="/heritage/">Heritage &amp; Origins</a></li><li><a href="/our-story/#certificate">Certificate of Authenticity</a></li><li><a href="/silk-rug-guide/">Silk Rug Buying Guide</a></li><li><a href="/heritage/#hereke">Hereke Silk Rugs</a></li></ul></div>' +
-          '<div><h5>Collection</h5><ul><li><a href="/rugs/">All Pieces</a></li><li><a href="/rugs/?category=Cappadocia%20Silk">Cappadocia Silk</a></li><li><a href="/rugs/?category=Persian%20Miniature">Persian Miniature</a></li><li><a href="/rugs/?category=Salon%20%26%20Court">Salon &amp; Court</a></li><li><a href="/rugs/?category=Landscape">Landscape</a></li></ul></div>' +
+          '<div><h5>The House</h5><ul><li><a href="/our-story/">Our Story</a></li><li><a href="/heritage/">Heritage &amp; Origins</a></li><li><a href="/our-story/#certificate">Certificate of Authenticity</a></li><li><a href="/silk-rug-guide/">Silk Rug Buying Guide</a></li><li><a href="/heritage/#hereke">The Story of Hereke</a></li></ul></div>' +
+          '<div><h5>Collection</h5><ul><li><a href="/rugs/">All Pieces</a></li><li><a href="/rugs/?category=Hereke%20Silk">Hereke Silk Rugs</a></li><li><a href="/rugs/?category=Kayseri%20Silk">Kayseri Silk Rugs</a></li><li><a href="/rugs/?type=Wall%20carpet">Tabriz Wall Carpets</a></li><li><a href="/rugs/?category=Persian%20Miniature">Persian Miniature</a></li></ul></div>' +
           '<div><h5>Trade</h5><ul><li><a href="/trade/">Trade Portal</a></li><li><a href="/trade/?type=commission">Custom Commissions</a></li><li><a href="/trade/?type=acquire">Private Acquisition</a></li><li><a href="mailto:info@professiorugs.com">info@professiorugs.com</a></li></ul></div>' +
         "</div>" +
-        '<div class="footer-bottom"><span>© ' + new Date().getFullYear() + ' Professio. Handmade rugs, family owned.</span><span>Handmade in Nevşehir, Cappadocia · Türkiye</span></div>' +
+        '<div class="footer-bottom"><span>© ' + new Date().getFullYear() + ' Professio. Handmade rugs, family owned.</span><span>Hereke &amp; Kayseri silk rugs · Tabriz wall carpets</span></div>' +
       "</div></footer>" +
       '<div class="drawer-backdrop" id="drawerBackdrop"></div>' +
       '<aside class="drawer" id="drawer" aria-label="Your collection" aria-hidden="true">' +
@@ -167,7 +177,10 @@
   function initReveal() {
     var els = $$(".reveal");
     $$(".product-grid, .pillars, .materials, .hereke-facts").forEach(function (g) {
-      $$(".reveal", g).forEach(function (el, i) { el.style.transitionDelay = (i % 3) * 120 + "ms"; });
+      $$(".reveal", g).forEach(function (el, i) {
+        el.style.transitionDelay = (i % 3) * 120 + "ms";
+        el.style.setProperty("--wd", (0.2 + (i % 3) * 0.16).toFixed(2) + "s"); // woven photo follows the card
+      });
     });
     if (!("IntersectionObserver" in window)) { els.forEach(function (e) { e.classList.add("in"); }); return; }
     var io = new IntersectionObserver(function (entries) {
@@ -176,11 +189,49 @@
     els.forEach(function (e) { io.observe(e); });
   }
 
+  /* ---------- A gold thread draws itself under section titles ---------- */
+  function initThreads() {
+    var heads = $$("main h2").filter(function (h) { return !h.closest(".hero, .card, .faq, .cappadocia, .flagship") && !h.classList.contains("gold-thread"); });
+    heads.forEach(function (h) {
+      h.classList.add("gold-thread");
+      if (getComputedStyle(h).textAlign === "center") h.classList.add("is-centered");
+    });
+    if (!("IntersectionObserver" in window) || reduceMotion) { heads.forEach(function (h) { h.classList.add("drawn"); }); return; }
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("drawn"); io.unobserve(e.target); } });
+    }, { rootMargin: "0px 0px -12% 0px" });
+    heads.forEach(function (h) { io.observe(h); });
+  }
+
+  /* ---------- Numbers count up when they come into view ---------- */
+  var counted = {};
+  function fmt(n) { return Math.round(n).toLocaleString("en-US"); }
+  function initCounts(root) {
+    var els = $$("[data-count]", root).filter(function (el) { return !el._count; });
+    els.forEach(function (el) {
+      el._count = true;
+      var to = +el.getAttribute("data-count");
+      if (reduceMotion || !("IntersectionObserver" in window) || counted[to]) { el.textContent = fmt(to); return; }
+      el.textContent = "0";
+      var io = new IntersectionObserver(function (es) {
+        if (!es[0].isIntersecting) return;
+        io.disconnect(); counted[to] = true;
+        var t0 = performance.now(), dur = 2600;
+        (function step(now) {
+          var u = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - u, 4);
+          el.textContent = fmt(to * e);
+          if (u < 1) requestAnimationFrame(step);
+        })(t0);
+      }, { threshold: 0.6 });
+      io.observe(el);
+    });
+  }
+
   /* ---------- Cards ---------- */
-  function altText(p) { return p.title + ", handmade " + (p.materials ? p.materials.toLowerCase() + " " : "") + "rug" + (p.dims ? ", " + dimsText(p) : ""); }
+  function altText(p) { return p.title + ", handmade " + kindText(p) + (p.type === "Wall carpet" && p.materials ? " in " + p.materials.toLowerCase() : "") + (p.dims ? ", " + dimsText(p) : ""); }
   function card(p) {
     var flag = p.tags && p.tags[0] ? '<span class="card-flag">' + esc(p.tags[0]) + "</span>" : "";
-    var meta = [p.materials, p.dims ? dimsText(p) : null].filter(Boolean).join(" · ") || "Specifications on request";
+    var meta = [town(p), p.materials, p.dims ? dimsText(p) : null].filter(Boolean).join(" · ") || "Specifications on request";
     var silk = /silk/i.test(p.materials || "") ? " silk" : "";
     var lead = p.soul && ((p.price || 0) >= 4000 || (p.tags || []).indexOf("Masterpiece") > -1);
     var teaser = lead ? '<span class="card-soul">' + esc(p.soul.split(/(?<=[.!?])\s/)[0]) + "</span>" : "";
@@ -203,13 +254,14 @@
   function initShop() {
     var grid = $("#productGrid"); if (!grid) return;
     var groups = {
+      type: { label: "Type", get: function (p) { return [p.type || "Floor rug"]; } },
       category: { label: "Category", get: function (p) { return [p.category]; } },
       materials: { label: "Material", get: function (p) { return [p.materials || "To be confirmed"]; } },
       size: { label: "Size", get: function (p) { return [sizeClass(p)]; } },
       shape: { label: "Shape", get: function (p) { return [p.shape || "Rectangle"]; } },
       tags: { label: "Edit", get: function (p) { return p.tags || []; } }
     };
-    var state = { category: [], materials: [], size: [], shape: [], tags: [] };
+    var state = { type: [], category: [], materials: [], size: [], shape: [], tags: [] };
     var params = new URLSearchParams(location.search);
     Object.keys(state).forEach(function (k) { if (params.get(k)) state[k] = params.get(k).split("|"); });
     var sort = "featured";
@@ -349,9 +401,11 @@
             placardRow("Materials", p.materials) +
             (p.dyes ? placardRow("Dyes", p.dyes) : "") +
             placardRow("Technique", p.technique || "Handmade", p.technique ? null : "Certified handmade by Professio") +
-            placardRow("Age", p.age) +
-            placardRow("Knot density", p.knots) +
+            placardRow("Knot density", p.knots, knotNote(p)) +
+            (knotTotal(p) ? '<dt>Knots</dt><dd>About <span data-count="' + knotTotal(p) + '">' + fmt(knotTotal(p)) + "</span><small>Each one tied by hand</small></dd>" : "") +
+            placardRow("Type", p.type) +
             placardRow("Origin", p.origin) +
+            placardRow("Age", p.age) +
           "</dl>" +
         "</div>" +
         '<div class="accordion">' +
@@ -370,6 +424,7 @@
       });
       $("#addBtn").addEventListener("click", function () { addToCollection(p.id); toast("Added to your collection"); openDrawer(); });
       initAccordions();
+      initCounts($("#pdpInfo"));
     }
     function acc(title, html, open) {
       return '<div class="acc-item' + (open ? " open" : "") + '"><button class="acc-btn" aria-expanded="' + !!open + '">' + title + '</button><div class="acc-panel"><div>' + html + "</div></div></div>";
@@ -391,7 +446,32 @@
       main.classList.remove("zoomed");
       main.innerHTML = '<img class="art' + (/^https?:|-photo-/.test(src) ? " is-photo" : "") + '" src="' + src + '" alt="' + esc(altText(p)) + '" referrerpolicy="no-referrer">';
     }
-    show(gallery[0]);
+    // The rug unrolls from the top when the page opens. The page head hides the
+    // photo ("unroll-pending") until it has loaded, so it never flashes first.
+    function unrollImage(img) {
+      var root = document.documentElement;
+      if (!root.classList.contains("unroll-pending")) return;
+      function go() {
+        if (!root.classList.contains("unroll-pending")) return;
+        root.classList.remove("unroll-pending");
+        var m = main.getBoundingClientRect(), r = img.getBoundingClientRect();
+        if (!r.height) return;
+        var roll = document.createElement("span");
+        roll.className = "pdp-roll";
+        roll.style.cssText = "left:" + (r.left - m.left) + "px;width:" + r.width + "px;top:" + (r.top - m.top) + "px;--h:" + (r.height + 130) + "px"; // travels with the clip edge (see @keyframes unroll)
+        main.appendChild(roll);
+        img.classList.add("unroll");
+        img.addEventListener("animationend", function () { img.classList.remove("unroll"); roll.remove(); }, { once: true });
+      }
+      if (img.complete && img.naturalWidth) requestAnimationFrame(go);
+      else {
+        img.addEventListener("load", go, { once: true });
+        img.addEventListener("error", function () { root.classList.remove("unroll-pending"); }, { once: true });
+      }
+    }
+    var first = $("img", main);
+    if (!first || first.getAttribute("src") !== gallery[0]) { show(gallery[0]); first = $("img", main); }
+    unrollImage(first);
     if (gallery.length > 1) {
       var th = document.createElement("div"); th.className = "pdp-thumbs";
       th.innerHTML = gallery.slice(0, 8).map(function (src, i) {
@@ -654,8 +734,7 @@
     var root = document.documentElement;
     if (!root.classList.contains("intro-pending")) return;
     try { sessionStorage.setItem("professio.intro", "1"); } catch (e) {}
-    var css = $('link[href$="css/style.css"]');
-    var src = new URL("../images/brand/wordmark-hd.png", css ? css.href : location.href).href;
+    var src = "/images/brand/wordmark-hd.png?v=2";
     var cover = document.createElement("div");
     cover.className = "intro"; cover.setAttribute("aria-hidden", "true");
     cover.innerHTML = '<canvas></canvas><span class="intro-skip">' + (matchMedia("(hover: hover)").matches ? "Click to enter" : "Tap to enter") + "</span>";
@@ -856,30 +935,52 @@
   }
 
   /* ---------- Flying carpet ---------- */
+  // A calm float: the rug rises and settles, its fringe stirs, a sheen of light
+  // crosses the silk now and then, and gold sparkles follow the pointer.
   function flyerHTML(p) {
-    var n = innerWidth < 700 ? 22 : 40, strips = "", motes = "";
-    for (var i = 0; i < n; i++) {
-      strips += '<i style="left:' + (i * 100 / n) + "%;width:calc(" + (100 / n) + "% + 1.5px);background-size:" + (n * 100) + "% 100%;background-position:" + (i * 100 / (n - 1)) + "% 0;--d:" + (-i * 3.4 * 1.25 / n).toFixed(2) + 's"></i>';
+    var src = new URL(p.flyer || p.image, location.href).href, motes = "", fringe = "";
+    var size = p.flyerSize || (p.dims ? [Math.max(p.dims[0], p.dims[1]), Math.min(p.dims[0], p.dims[1])] : [3, 2]);
+    for (var m = 0; m < 10; m++) {
+      motes += '<b style="left:' + (8 + Math.random() * 84).toFixed(1) + "%;--t:" + (11 + Math.random() * 8).toFixed(1) + "s;--dl:" + (-Math.random() * 19).toFixed(1) + "s;--s:" + (2 + Math.random() * 2.5).toFixed(1) + 'px"></b>';
     }
-    for (var m = 0; m < 14; m++) {
-      motes += '<b style="left:' + (8 + Math.random() * 84).toFixed(1) + "%;--t:" + (6 + Math.random() * 6).toFixed(1) + "s;--dl:" + (-Math.random() * 12).toFixed(1) + "s;--s:" + (2 + Math.random() * 3).toFixed(1) + 'px"></b>';
+    if (p.flyer) { // the fringe on each short end stirs gently, a little more under the pointer
+      fringe = '<img class="flyer-fringe flyer-fringe--l" src="' + src + '" alt="" draggable="false">' +
+               '<img class="flyer-fringe flyer-fringe--r" src="' + src + '" alt="" draggable="false">';
     }
-    var ratio = p.dims ? Math.max(p.dims[0], p.dims[1]) / Math.min(p.dims[0], p.dims[1]) : 829 / 565;
-    return '<div class="flyer" role="img" aria-label="' + esc(p.title) + ', a handmade silk rug floating in the air" style="aspect-ratio:' + ratio.toFixed(3) + '">' +
-      '<div class="flyer-aura"></div>' +
-      '<div class="flyer-float"><div class="flyer-tilt"><div class="flyer-rug" style="--img:url(\'' + new URL(p.flyer || p.image, location.href).href + '\')">' + strips + "</div></div></div>" +
-      '<div class="flyer-shadow"></div><div class="flyer-motes" aria-hidden="true">' + motes + "</div></div>";
+    return '<div class="flyer' + (p.flyer ? " has-fringe" : "") + '" role="img" aria-label="' + esc(p.title) + ", a handmade " + esc(kindText(p)) + ' floating in the air" style="aspect-ratio:' + size[0] + " / " + size[1] + '">' +
+      '<div class="flyer-aura"></div><div class="flyer-shadow"></div>' +
+      '<div class="flyer-float"><div class="flyer-tilt">' +
+        '<img class="flyer-body" src="' + src + '" alt="" draggable="false" width="' + size[0] + '" height="' + size[1] + '">' + fringe +
+        '<span class="flyer-sheen" style="-webkit-mask-image:url(\'' + src + '\');mask-image:url(\'' + src + '\')"></span>' +
+      "</div></div>" +
+      '<div class="flyer-motes" aria-hidden="true">' + motes + "</div></div>";
   }
   function watchFlyer(el) {
-    if (!("IntersectionObserver" in window)) return;
-    new IntersectionObserver(function (es) {
-      es.forEach(function (e) { e.target.classList.toggle("is-paused", !e.isIntersecting); });
-    }).observe(el);
+    if (!el) return;
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (es) {
+        es.forEach(function (e) { e.target.classList.toggle("is-paused", !e.isIntersecting); });
+      }).observe(el);
+    }
+    // gold sparkles trail the pointer across the rug
+    if (reduceMotion || !matchMedia("(hover: hover)").matches) return;
+    var last = 0, lx = -99, ly = -99, alive = 0;
+    el.addEventListener("pointermove", function (e) {
+      var now = performance.now(), r = el.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+      if (now - last < 55 || Math.abs(x - lx) + Math.abs(y - ly) < 6 || alive > 26) return;
+      last = now; lx = x; ly = y; alive++;
+      var s = document.createElement("i"), size = 3 + Math.random() * 5;
+      s.className = "flyer-spark";
+      s.style.cssText = "left:" + (x + (Math.random() - 0.5) * 14).toFixed(1) + "px;top:" + (y + (Math.random() - 0.5) * 14).toFixed(1) + "px;--s:" + size.toFixed(1) +
+        "px;--dx:" + ((Math.random() - 0.5) * 26).toFixed(1) + "px;--dy:" + (10 + Math.random() * 26).toFixed(1) + "px;--t:" + (1.3 + Math.random() * 0.9).toFixed(2) + "s";
+      el.appendChild(s);
+      s.addEventListener("animationend", function () { s.remove(); alive--; });
+    });
   }
   function initFlagship() {
     $$("[data-flagship]").forEach(function (el) {
       var p = byId(el.getAttribute("data-flagship")); if (!p) return;
-      var href = rugUrl(p);
+      var href = rugUrl(p), knots = knotTotal(p);
       var teaser = (p.soul || p.story || "").split(/(?<=[.!?])\s/).slice(0, 2).join(" ");
       el.innerHTML =
         '<div class="flagship-glow" aria-hidden="true"></div>' +
@@ -889,7 +990,8 @@
             '<span class="eyebrow">The Flagship · ' + esc(p.ref) + "</span>" +
             "<h2>" + esc(p.title) + "</h2>" +
             '<p class="lede">' + esc(teaser) + "</p>" +
-            '<p class="flagship-meta">' + [dimsText(p, "cm"), p.materials, (p.origin || "").split(" · ")[0]].filter(Boolean).map(esc).join(" · ") + "</p>" +
+            '<p class="flagship-meta">' + [dimsText(p, "cm"), p.materials, p.origin].filter(Boolean).map(esc).join(" · ") + "</p>" +
+            (knots ? '<p class="flagship-knots"><span data-count="' + knots + '">' + fmt(knots) + "</span> knots, each tied by hand</p>" : "") +
             '<div class="flagship-price">' + priceText(p) + "</div>" +
             '<div class="hero-actions">' +
               '<a class="btn btn--light" href="' + href + '">View the Piece</a>' +
@@ -898,6 +1000,7 @@
           "</div>" +
         "</div>";
       watchFlyer($(".flyer", el));
+      initCounts(el);
     });
   }
 
@@ -920,4 +1023,6 @@
   initForms();
   initAccordions();
   initReveal();
+  initThreads();
+  initCounts();
 })();
