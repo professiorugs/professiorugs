@@ -99,7 +99,7 @@ window.PROFESSIO_PRODUCTS = [
     image: "images/collection/p5-3.jpg", category: "Persian Miniature",
     materials: "Pure Silk", dims: [200, 300], tags: ["Masterpiece"],
     story: "Two by three metres of pure silk: musicians, dancers and sleepers beneath flowering trees, framed by an illuminated border. Pieces of this scale take a workshop years, and rarely leave private hands.",
-    price: 21640, origin: "Nevşehir, Cappadocia · Türkiye", etsy: "https://www.etsy.com/listing/1388668425", photo: true,
+    price: 21640, origin: "Nevşehir, Cappadocia · Türkiye", etsy: "https://www.etsy.com/listing/1388668425", photo: true, flagship: true,
     images: ["https://i.etsystatic.com/35873478/r/il/a48405/4547818031/il_794xN.4547818031_885l.jpg", "https://i.etsystatic.com/35873478/r/il/c5f39e/4500458480/il_794xN.4500458480_ffrz.jpg", "https://i.etsystatic.com/35873478/r/il/f16679/4547821219/il_794xN.4547821219_89br.jpg", "https://i.etsystatic.com/35873478/r/il/4c3146/4500458684/il_794xN.4500458684_1c12.jpg", "https://i.etsystatic.com/35873478/r/il/a56e9e/4547821253/il_794xN.4547821253_a9og.jpg"]
   },
   {

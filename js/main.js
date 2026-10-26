@@ -375,6 +375,13 @@
     renderInfo();
 
     if (p.soul && $("#soulSection")) { $("#soulText").textContent = p.soul; $("#soulSection").hidden = false; }
+    if (p.flagship && $("#soulSection")) {
+      var band = document.createElement("section");
+      band.className = "flagship flagship--pdp";
+      band.innerHTML = '<div class="flagship-glow" aria-hidden="true"></div><div class="wrap"><div class="flagship-stage">' + flyerHTML(p) + '</div><p class="flagship-caption">The flagship of the house, in flight.</p></div>';
+      $("#soulSection").parentNode.insertBefore(band, $("#soulSection"));
+      watchFlyer($(".flyer", band));
+    }
     var main = $("#pdpMain");
     if (/silk/i.test(p.materials || "")) main.classList.add("silk");
     var gallery = [p.image].concat((p.images || []).filter(function (u) { return u !== p.image; }));
@@ -646,7 +653,7 @@
     if (!root.classList.contains("intro-pending")) return;
     try { sessionStorage.setItem("professio.intro", "1"); } catch (e) {}
     var css = $('link[href$="css/style.css"]');
-    var src = new URL("../images/brand/wordmark.png", css ? css.href : location.href).href;
+    var src = new URL("../images/brand/wordmark-hd.png", css ? css.href : location.href).href;
     var cover = document.createElement("div");
     cover.className = "intro"; cover.setAttribute("aria-hidden", "true");
     cover.innerHTML = '<canvas></canvas><span class="intro-skip">' + (matchMedia("(hover: hover)").matches ? "Click to enter" : "Tap to enter") + "</span>";
@@ -655,73 +662,225 @@
     root.classList.add("intro-active");
 
     var canvas = $("canvas", cover), ctx = canvas.getContext("2d");
-    var dpr = Math.min(window.devicePixelRatio || 1, 2), W, H, done = false, raf;
-    function size() { W = innerWidth; H = innerHeight; canvas.width = W * dpr; canvas.height = H * dpr; canvas.style.width = W + "px"; canvas.style.height = H + "px"; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
-    size();
+    var dpr = Math.min(window.devicePixelRatio || 1, 2), W = innerWidth, H = innerHeight, done = false, raf;
+    canvas.width = W * dpr; canvas.height = H * dpr; canvas.style.width = W + "px"; canvas.style.height = H + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     function finish(fast) {
       if (done) return; done = true;
       cover.classList.add(fast ? "is-leaving-fast" : "is-leaving");
       root.classList.remove("intro-active");
-      setTimeout(function () { cancelAnimationFrame(raf); cover.remove(); }, fast ? 450 : 1100);
+      setTimeout(function () { cancelAnimationFrame(raf); cover.remove(); }, fast ? 450 : 1300);
     }
     cover.addEventListener("click", function () { finish(true); });
     document.addEventListener("keydown", function () { finish(true); }, { once: true });
-    setTimeout(function () { finish(false); }, 5200); // safety net
+    setTimeout(function () { finish(false); }, 5500); // safety net
+
+    // soft glowing sprites for the dust
+    function sprite(inner, mid) {
+      var c = document.createElement("canvas"), g = c.getContext("2d"); c.width = c.height = 32;
+      var grd = g.createRadialGradient(16, 16, 0, 16, 16, 16);
+      grd.addColorStop(0, inner); grd.addColorStop(0.3, mid); grd.addColorStop(1, "rgba(0,0,0,0)");
+      g.fillStyle = grd; g.fillRect(0, 0, 32, 32); return c;
+    }
+    var GOLD = sprite("rgba(255,244,214,1)", "rgba(232,182,104,.5)");
+    var CREAM = sprite("rgba(246,234,210,.95)", "rgba(220,196,160,.28)");
 
     var img = new Image();
     img.onerror = function () { finish(true); };
     img.onload = function () {
-      var lw = Math.min(W * 0.82, 920), lh = lw * img.height / img.width;
-      var lx = (W - lw) / 2, ly = (H - lh) / 2;
-      // tint the wordmark cream-gold on an offscreen canvas
-      var off = document.createElement("canvas"), oc = off.getContext("2d");
-      off.width = Math.round(lw); off.height = Math.round(lh);
-      oc.drawImage(img, 0, 0, off.width, off.height);
-      oc.globalCompositeOperation = "source-in"; oc.fillStyle = "#E9D9BC"; oc.fillRect(0, 0, off.width, off.height);
-
-      var parts = [], data, gap = W < 700 ? 2 : 3;
-      try { data = oc.getImageData(0, 0, off.width, off.height).data; } catch (e) { data = null; }
-      if (data) {
-        for (var y = 0; y < off.height; y += gap) for (var x = 0; x < off.width; x += gap) {
-          var a = data[(y * off.width + x) * 4 + 3];
-          if (a > 90) parts.push({
-            x: lx + x, y: ly + y, a: a / 255,
-            vx: 0.6 + Math.random() * 1.8, vy: -(0.2 + Math.random() * 1.1),
-            delay: (x / off.width) * 0.75 + Math.random() * 0.25, s: Math.random() < 0.15 ? 2 : 1.2
-          });
-        }
+      var mobile = W < 700;
+      var lw = Math.min(W * (mobile ? 0.84 : 0.66), 940), lh = lw * img.height / img.width;
+      var lx = (W - lw) / 2, ly = (H - lh) / 2, cx = W / 2, cy = H / 2;
+      function layer(scale, colour) {
+        var c = document.createElement("canvas"), g = c.getContext("2d");
+        c.width = Math.round(lw * scale); c.height = Math.round(lh * scale);
+        g.imageSmoothingQuality = "high";
+        g.drawImage(img, 0, 0, c.width, c.height);
+        g.globalCompositeOperation = "source-in"; g.fillStyle = colour; g.fillRect(0, 0, c.width, c.height);
+        return c;
       }
+      var mark = layer(dpr, "#EBDBBE");       // crisp wordmark
+      var probe = layer(1, "#fff");           // for sampling the dust
+      // golden halo, drawn once
+      var pad = Math.round(lh * 0.7), glow = document.createElement("canvas"), gg = glow.getContext("2d");
+      glow.width = mark.width + pad * 2 * dpr; glow.height = mark.height + pad * 2 * dpr;
+      gg.shadowColor = "rgba(236,190,112,.85)"; gg.shadowBlur = lh * 0.35 * dpr;
+      gg.drawImage(mark, pad * dpr, pad * dpr); gg.drawImage(mark, pad * dpr, pad * dpr);
+      // working layers for the shine sweep and the dissolve
+      var work = document.createElement("canvas"), wc = work.getContext("2d");
+      work.width = mark.width; work.height = mark.height;
 
-      var start = performance.now(), HOLD = 1300, FADEIN = 700, DUST = 1900;
+      var pts = [], data = null;
+      try { data = probe.getContext("2d").getImageData(0, 0, probe.width, probe.height).data; } catch (e) {}
+      if (data) for (var y = 0; y < probe.height; y += 1) for (var x = 0; x < probe.width; x += 1)
+        if (data[(y * probe.width + x) * 4 + 3] > 120) pts.push(x, y);
+      var target = mobile ? 1500 : 3400, n = pts.length / 2, parts = [];
+      var sc = lw / 940, SPAN = 0.42; // dissolve sweeps left to right over SPAN seconds
+      for (var i = 0; i < Math.min(target, n); i++) {
+        var j = i + Math.floor(Math.random() * (n - i)), px = pts[j * 2], py = pts[j * 2 + 1];
+        pts[j * 2] = pts[i * 2]; pts[j * 2 + 1] = pts[i * 2 + 1];
+        var fx = px / lw, nx = (px - lw / 2) / (lw / 2), ny = (py - lh / 2) / (lh / 2);
+        var big = Math.random() < 0.07;
+        parts.push({
+          x: lx + px, y: ly + py,
+          vx: (80 + Math.random() * 300 + nx * 170) * sc, vy: (-(40 + Math.random() * 240) + ny * 120) * sc,
+          d: fx * SPAN + Math.random() * 0.06, life: 0.9 + Math.random() * 0.9,
+          r: big ? 4 + Math.random() * 4 : 1.6 + Math.random() * 2.2, spr: big || Math.random() < 0.45 ? GOLD : CREAM,
+          tw: 6 + Math.random() * 14, ph: Math.random() * 6.3, w: 1 + Math.random() * 3
+        });
+      }
+      var sparks = [];
+
+      var start = performance.now();
+      var IN = 900, SHINE = 1000, SHINE_LEN = 900, POOF = 2000, LEAVE = 2750;
+      function ease(u) { return u < 0 ? 0 : u > 1 ? 1 : 1 - Math.pow(1 - u, 3); }
+
       function frame(now) {
         if (done && cover.classList.contains("is-leaving-fast")) return;
         var t = now - start;
         ctx.clearRect(0, 0, W, H);
-        if (t < HOLD || !data) {
-          ctx.globalAlpha = Math.min(1, t / FADEIN);
-          ctx.drawImage(off, lx, ly, lw, lh);
-          if (!data && t > HOLD) { finish(false); return; }
-        } else {
-          var k = (t - HOLD) / DUST; // 0..1
-          ctx.fillStyle = "#E9D9BC";
-          for (var i = 0; i < parts.length; i++) {
-            var p = parts[i], local = Math.max(0, k * 1.6 - p.delay);
-            if (local <= 0) { ctx.globalAlpha = p.a; ctx.fillRect(p.x, p.y, gap, gap); continue; }
-            var e = local * local * 60;
-            var alpha = p.a * Math.max(0, 1 - local * 1.15);
-            if (alpha <= 0) continue;
-            ctx.globalAlpha = alpha;
-            ctx.fillRect(p.x + p.vx * e + Math.sin((p.y + e) * 0.05) * local * 6, p.y + p.vy * e, p.s, p.s);
-          }
-          if (k > 0.55) finish(false);
-          if (k >= 1.3) return;
+        ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1;
+
+        var shineU = (t - SHINE) / SHINE_LEN;            // 0..1 while the light passes
+        var poofS = (t - POOF) / 1000;                   // seconds since the poof
+        var glowA = t < SHINE ? 0 : t < POOF ? ease(shineU) * 0.75 : Math.max(0, 0.75 + 0.25 * (1 - poofS * 4)) * Math.max(0, 1 - poofS * 2.2);
+
+        // the wordmark, rising out of the dark
+        var a = ease(t / IN), s = 0.965 + 0.035 * a;
+        var dw = lw * s, dh = lh * s, dx = cx - dw / 2, dy = cy - dh / 2;
+        if (glowA > 0) {
+          ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = glowA;
+          ctx.drawImage(glow, dx - pad * s, dy - pad * s, dw + pad * 2 * s, dh + pad * 2 * s);
+          ctx.globalCompositeOperation = "source-over";
         }
+        if (poofS < SPAN + 0.12) {
+          wc.globalCompositeOperation = "source-over"; wc.clearRect(0, 0, work.width, work.height);
+          wc.drawImage(mark, 0, 0);
+          if (poofS > 0) { // dissolve front
+            var fx2 = (poofS / SPAN) * work.width * 1.12, edge = work.width * 0.12;
+            var gr = wc.createLinearGradient(fx2 - edge, 0, fx2, 0);
+            gr.addColorStop(0, "rgba(0,0,0,1)"); gr.addColorStop(1, "rgba(0,0,0,0)");
+            wc.globalCompositeOperation = "destination-out"; wc.fillStyle = gr; wc.fillRect(0, 0, work.width, work.height);
+          }
+          ctx.globalAlpha = a; ctx.drawImage(work, dx, dy, dw, dh);
+          if (shineU > 0 && shineU < 1.15) { // the golden light
+            var bx = (-0.25 + shineU * 1.5) * work.width, bw = work.width * 0.16;
+            wc.globalCompositeOperation = "source-over"; wc.clearRect(0, 0, work.width, work.height);
+            wc.drawImage(mark, 0, 0);
+            var sg = wc.createLinearGradient(bx - bw, work.height, bx + bw, 0);
+            sg.addColorStop(0, "rgba(255,214,140,0)"); sg.addColorStop(0.45, "rgba(255,226,165,.85)");
+            sg.addColorStop(0.5, "rgba(255,250,235,1)"); sg.addColorStop(0.55, "rgba(255,226,165,.85)"); sg.addColorStop(1, "rgba(255,214,140,0)");
+            wc.globalCompositeOperation = "source-in"; wc.fillStyle = sg; wc.fillRect(0, 0, work.width, work.height);
+            ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = 1;
+            ctx.drawImage(work, dx, dy, dw, dh);
+            // a few twinkles riding the light
+            if (n && Math.random() < 0.7) {
+              var k = Math.floor(Math.random() * n), sx = pts[k * 2], bandX = bx / dpr;
+              if (Math.abs(sx - bandX) < bw / dpr) sparks.push({ x: lx + sx, y: ly + pts[k * 2 + 1], b: t, r: 3 + Math.random() * 4 });
+            }
+          }
+        }
+
+        // twinkles and the final glint
+        ctx.globalCompositeOperation = "lighter";
+        for (var q = sparks.length - 1; q >= 0; q--) {
+          var sp = sparks[q], u = (t - sp.b) / 520;
+          if (u >= 1) { sparks.splice(q, 1); continue; }
+          var e = Math.sin(u * Math.PI), r = sp.r * e;
+          ctx.globalAlpha = e;
+          ctx.drawImage(GOLD, sp.x - r, sp.y - r, r * 2, r * 2);
+          ctx.globalAlpha = e * 0.8;
+          ctx.drawImage(GOLD, sp.x - r * 3, sp.y - 0.8, r * 6, 1.6);
+          ctx.drawImage(GOLD, sp.x - 0.8, sp.y - r * 3, 1.6, r * 6);
+        }
+        var gU = (t - (POOF - 260)) / 420; // star glint at the end of the shine
+        if (gU > 0 && gU < 1) {
+          var ge = Math.sin(gU * Math.PI), gx = lx + lw * 0.985, gy = ly + lh * 0.12, gl = lh * 0.55 * ge;
+          ctx.globalAlpha = ge;
+          ctx.drawImage(GOLD, gx - gl * 0.35, gy - gl * 0.35, gl * 0.7, gl * 0.7);
+          ctx.drawImage(GOLD, gx - gl, gy - 1.2, gl * 2, 2.4);
+          ctx.drawImage(GOLD, gx - 1.2, gy - gl, 2.4, gl * 2);
+        }
+
+        // poof: a soft bloom and the glowing dust
+        if (poofS > 0) {
+          var bl = Math.max(0, 1 - poofS / 0.7);
+          if (bl > 0) {
+            var rg = ctx.createRadialGradient(cx, cy, 0, cx, cy, lw * 0.6);
+            rg.addColorStop(0, "rgba(240,196,128," + (0.22 * bl * bl) + ")"); rg.addColorStop(1, "rgba(240,196,128,0)");
+            ctx.globalAlpha = 1; ctx.fillStyle = rg;
+            ctx.save(); ctx.translate(cx, cy); ctx.scale(1, lh / lw * 1.8); ctx.translate(-cx, -cy);
+            ctx.fillRect(cx - lw, cy - lw, lw * 2, lw * 2); ctx.restore();
+          }
+          for (var m = 0; m < parts.length; m++) {
+            var p = parts[m], ls = poofS - p.d;
+            if (ls <= 0) continue;
+            var pu = ls / p.life;
+            if (pu >= 1) continue;
+            var f = (1 - Math.exp(-ls * 2.4)) / 2.4;
+            var X = p.x + p.vx * f + Math.sin(ls * p.w + p.ph) * 8 * ls;
+            var Y = p.y + p.vy * f - 26 * ls * ls;
+            var al = Math.pow(1 - pu, 1.6) * (0.7 + 0.3 * Math.sin(ls * p.tw + p.ph));
+            var rr = p.r * (0.8 + pu * 1.3) * (ls < 0.08 ? 1.6 - ls * 7.5 : 1);
+            ctx.globalAlpha = al;
+            ctx.drawImage(p.spr, X - rr, Y - rr, rr * 2, rr * 2);
+          }
+        }
+        ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
+
+        if (t > LEAVE) finish(false);
+        if (poofS > 2.4) return;
         raf = requestAnimationFrame(frame);
       }
       raf = requestAnimationFrame(frame);
     };
     img.src = src;
+  }
+
+  /* ---------- Flying carpet ---------- */
+  function flyerHTML(p) {
+    var n = innerWidth < 700 ? 22 : 40, strips = "", motes = "";
+    for (var i = 0; i < n; i++) {
+      strips += '<i style="left:' + (i * 100 / n) + "%;width:calc(" + (100 / n) + "% + 1.5px);background-size:" + (n * 100) + "% 100%;background-position:" + (i * 100 / (n - 1)) + "% 0;--d:" + (-i * 3.4 * 1.25 / n).toFixed(2) + 's"></i>';
+    }
+    for (var m = 0; m < 14; m++) {
+      motes += '<b style="left:' + (8 + Math.random() * 84).toFixed(1) + "%;--t:" + (6 + Math.random() * 6).toFixed(1) + "s;--dl:" + (-Math.random() * 12).toFixed(1) + "s;--s:" + (2 + Math.random() * 3).toFixed(1) + 'px"></b>';
+    }
+    return '<div class="flyer" role="img" aria-label="' + esc(p.title) + ', floating in the air">' +
+      '<div class="flyer-aura"></div>' +
+      '<div class="flyer-float"><div class="flyer-tilt"><div class="flyer-rug" style="--img:url(\'' + new URL(p.image, location.href).href + '\')">' + strips + "</div></div></div>" +
+      '<div class="flyer-shadow"></div><div class="flyer-motes" aria-hidden="true">' + motes + "</div></div>";
+  }
+  function watchFlyer(el) {
+    if (!("IntersectionObserver" in window)) return;
+    new IntersectionObserver(function (es) {
+      es.forEach(function (e) { e.target.classList.toggle("is-paused", !e.isIntersecting); });
+    }).observe(el);
+  }
+  function initFlagship() {
+    $$("[data-flagship]").forEach(function (el) {
+      var p = byId(el.getAttribute("data-flagship")); if (!p) return;
+      var href = "product.html?id=" + encodeURIComponent(p.id);
+      var teaser = (p.soul || p.story || "").split(/(?<=[.!?])\s/).slice(0, 2).join(" ");
+      el.innerHTML =
+        '<div class="flagship-glow" aria-hidden="true"></div>' +
+        '<div class="wrap flagship-grid">' +
+          '<a class="flagship-stage" href="' + href + '">' + flyerHTML(p) + "</a>" +
+          '<div class="flagship-copy reveal">' +
+            '<span class="eyebrow">The Flagship · ' + esc(p.ref) + "</span>" +
+            "<h2>" + esc(p.title) + "</h2>" +
+            '<p class="lede">' + esc(teaser) + "</p>" +
+            '<p class="flagship-meta">' + [dimsText(p, "cm"), p.materials, (p.origin || "").split(" · ")[0]].filter(Boolean).map(esc).join(" · ") + "</p>" +
+            '<div class="flagship-price">' + priceText(p) + "</div>" +
+            '<div class="hero-actions">' +
+              '<a class="btn btn--light" href="' + href + '">View the Piece</a>' +
+              (p.etsy ? '<a class="btn btn--light" style="border-color:transparent" href="' + p.etsy + '" target="_blank" rel="noopener">Acquire Piece</a>' : "") +
+            "</div>" +
+          "</div>" +
+        "</div>";
+      watchFlyer($(".flyer", el));
+    });
   }
 
   /* ---------- Boot ---------- */
@@ -730,6 +889,7 @@
   initRidge();
   initLayout();
   initFeatured();
+  initFlagship();
   initShop();
   initProduct();
   initZoomer();
