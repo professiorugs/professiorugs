@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trade Portal & Commissions · Professio</title>
+  <meta name="description" content="Trade and wholesale enquiries, private acquisitions and custom commissions with Professio, a family house of handmade rugs.">
+  <meta property="og:title" content="Trade Portal & Commissions · Professio">
+  <meta property="og:description" content="Trade and wholesale enquiries, private acquisitions and custom commissions with Professio, a family house of handmade rugs.">
+  <meta property="og:image" content="images/editorial/artisan-lean.jpg">
+  <link rel="icon" href="images/brand/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="trade">
+<main id="main">
+  <section class="section--tight">
+    <div class="wrap trade-layout">
+      <aside class="trade-aside">
+        <span class="eyebrow">Trade Portal</span>
+        <h1 style="font-size:clamp(2.4rem,4.4vw,3.8rem)">A private line to the house</h1>
+        <p class="lede" style="margin-top:24px">For collectors acquiring a piece, for the international trade, and for commissions made to measure.</p>
+        <ul class="benefits">
+          <li><span>i.</span><div><strong class="serif" style="font-size:1.15rem">Trade pricing &amp; curated lots</strong><br><span class="small">For interior designers, architects, galleries, retailers and hospitality.</span></div></li>
+          <li><span>ii.</span><div><strong class="serif" style="font-size:1.15rem">First sight of new arrivals</strong><br><span class="small">Before they reach the website.</span></div></li>
+          <li><span>iii.</span><div><strong class="serif" style="font-size:1.15rem">Commissions to measure</strong><br><span class="small">Your subject, palette and dimensions, woven by master artisans.</span></div></li>
+          <li><span>iv.</span><div><strong class="serif" style="font-size:1.15rem">Insured worldwide delivery</strong><br><span class="small">Rolled or framed, with export documentation.</span></div></li>
+        </ul>
+        <p class="small" style="margin-top:28px">Prefer to write directly? <a href="mailto:info@professiorugs.com" style="text-decoration:underline">info@professiorugs.com</a></p>
+      </aside>
+
+      <div>
+        <!-- Set action to your Formspree endpoint (https://formspree.io/f/xxxxxxx) to receive submissions by email. See README. -->
+        <form class="form" data-form="inquiry" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+          <fieldset class="field full">
+            <legend>Nature of your enquiry</legend>
+            <div class="radio-cards">
+              <label class="radio-card"><input type="radio" name="inquiry_type" value="acquire" checked><span><strong>Private Acquisition</strong><em>Acquire a piece or arrange a viewing</em></span></label>
+              <label class="radio-card"><input type="radio" name="inquiry_type" value="trade"><span><strong>Trade &amp; Wholesale</strong><em>Designers, retail, hospitality</em></span></label>
+              <label class="radio-card"><input type="radio" name="inquiry_type" value="commission"><span><strong>Custom Commission</strong><em>A piece made to your brief</em></span></label>
+            </div>
+          </fieldset>
+
+          <div class="field"><label for="f-name">Full name</label><input id="f-name" name="name" required autocomplete="name"></div>
+          <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" required autocomplete="email"></div>
+          <div class="field"><label for="f-country">Country</label><input id="f-country" name="country" autocomplete="country-name"></div>
+          <div class="field"><label for="f-phone">Telephone <span style="text-transform:none;letter-spacing:0">(optional)</span></label><input id="f-phone" name="phone" type="tel" autocomplete="tel"></div>
+
+          <div class="field" data-show="trade"><label for="f-company">Company</label><input id="f-company" name="company" autocomplete="organization"></div>
+          <div class="field" data-show="trade"><label for="f-role">Your business</label>
+            <select id="f-role" name="business_type"><option value="">Select</option><option>Interior design studio</option><option>Architecture practice</option><option>Retailer / showroom</option><option>Gallery / dealer</option><option>Hotel / hospitality</option><option>Other</option></select></div>
+          <div class="field" data-show="trade"><label for="f-web">Website</label><input id="f-web" name="website" type="url" placeholder="https://"></div>
+          <div class="field" data-show="trade"><label for="f-vol">Expected volume</label>
+            <select id="f-vol" name="volume"><option value="">Select</option><option>A single project</option><option>2–10 pieces a year</option><option>10–50 pieces a year</option><option>50+ pieces a year</option></select></div>
+
+          <div class="field full" data-show="acquire trade"><label for="piecesField">Pieces of interest</label><input id="piecesField" name="pieces" placeholder="Titles or references, if any"></div>
+          <div class="field" data-show="acquire"><label for="f-view">Viewing preference</label>
+            <select id="f-view" name="viewing"><option>Video viewing</option><option>In person</option><option>No viewing needed</option></select></div>
+
+          <div class="field" data-show="commission"><label for="f-subject">Subject or style</label>
+            <select id="f-subject" name="commission_style"><option value="">Select</option><option>Pictorial (scene or portrait)</option><option>Persian miniature</option><option>Classical medallion</option><option>Anatolian geometric</option><option>Contemporary / my own design</option></select></div>
+          <div class="field" data-show="commission"><label for="f-size">Dimensions</label><input id="f-size" name="commission_size" placeholder="e.g. 200 × 300 cm"></div>
+          <div class="field" data-show="commission"><label for="f-mat">Material</label>
+            <select id="f-mat" name="commission_material"><option>Wool &amp; silk</option><option>Pure silk</option><option>Pure wool</option><option>Advise me</option></select></div>
+          <div class="field" data-show="commission"><label for="f-time">Timeline</label>
+            <select id="f-time" name="commission_timeline"><option>Flexible</option><option>Within 6 months</option><option>Within 12 months</option></select></div>
+
+          <div class="field full"><label for="f-msg">Your message</label><textarea id="f-msg" name="message" placeholder="Tell us about the room, the project or the piece you have in mind."></textarea></div>
+
+          <div class="full" style="display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap">
+            <p class="form-note" style="margin:0;max-width:380px">We reply personally within one business day. Your details are used only to answer this enquiry.</p>
+            <button class="btn btn--solid" type="submit">Send Enquiry</button>
+          </div>
+        </form>
+        <div class="form-success" id="formSuccess" role="status">
+          <span class="eyebrow">Received</span>
+          <h2>Thank you.</h2>
+          <p class="lede" style="margin-top:18px">A member of the family will write to you personally within one business day.</p>
+          <a class="link-arrow" href="shop.html">Return to the collection</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="hero hero--short">
+    <div class="media"><img src="images/editorial/artisan-reach.jpg" alt="" loading="lazy" style="--focus: 50% 30%"></div>
+    <div class="hero-content"><div class="wrap"><span class="eyebrow">For the trade</span><h2 style="color:var(--paper);max-width:18ch">Much of the archive never reaches the website. Ask us.</h2></div></div>
+  </section>
+
+</main>
+<script src="js/products.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
