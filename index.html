@@ -19,10 +19,18 @@
 
   <!-- Campaign hero -->
   <section class="hero">
-    <div class="media">
-      <picture>
+    <div class="media hero-slides" data-interval="7000">
+      <picture class="slide is-active">
         <source media="(max-width: 760px)" srcset="images/editorial/artisan-reach.jpg">
         <img src="images/editorial/artisan-lean.jpg" alt="An artisan in an open linen shirt leans against towering rolled rugs in the Professio archive" style="--focus: 60% 35%">
+      </picture>
+      <picture class="slide">
+        <source media="(max-width: 760px)" srcset="images/editorial/artisan-rolls.jpg">
+        <img src="images/editorial/artisan-rolls.jpg" alt="" style="--focus: 40% 38%">
+      </picture>
+      <picture class="slide">
+        <source media="(max-width: 760px)" srcset="images/editorial/artisan-rest.jpg">
+        <img src="images/editorial/artisan-reach.jpg" alt="" style="--focus: 50% 26%">
       </picture>
     </div>
     <div class="hero-content">
@@ -85,6 +93,18 @@
         <div class="hero-actions"><a class="btn btn--light" href="heritage.html">Heritage &amp; Origins</a></div>
       </div>
     </div>
+  </section>
+
+  <!-- Cappadocia interlude -->
+  <section class="cappadocia" aria-labelledby="capTitle">
+    <div class="cap-glow" aria-hidden="true"></div>
+    <div class="wrap cap-inner reveal">
+      <span class="eyebrow">Nevşehir · Cappadocia</span>
+      <h2 id="capTitle">Where the stone<br><em>keeps the silk.</em></h2>
+      <p class="lede">Our silks are woven in Nevşehir, at the heart of Cappadocia: a land of fairy chimneys and rock-cut chapels, shaped by wind and by centuries of patient hands. The light there falls slowly, honey by day and indigo by night. You can see both in the colours.</p>
+      <a class="btn btn--light" href="shop.html?category=Cappadocia%20Silk">Enter the Cappadocia Silks</a>
+    </div>
+    <svg class="cap-ridge" id="capRidge" viewBox="0 0 1600 260" preserveAspectRatio="xMidYMax slice" aria-hidden="true"></svg>
   </section>
 
   <!-- Three paths -->

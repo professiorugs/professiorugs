@@ -220,3 +220,65 @@ window.PROFESSIO_PRODUCTS = [
   {"id": "the-drawing-room", "ref": "No. E-4065", "title": "The Drawing Room", "subtitle": "An eighteenth-century interior in silk", "image": "https://i.etsystatic.com/35873478/r/il/335a64/4500370380/il_794xN.4500370380_lbdf.jpg", "images": ["https://i.etsystatic.com/35873478/r/il/335a64/4500370380/il_794xN.4500370380_lbdf.jpg", "https://i.etsystatic.com/35873478/r/il/92063d/4547719151/il_794xN.4547719151_kdsu.jpg", "https://i.etsystatic.com/35873478/r/il/424183/4547719195/il_794xN.4547719195_ct3s.jpg", "https://i.etsystatic.com/35873478/r/il/fe4b37/4500356560/il_794xN.4500356560_e3rr.jpg", "https://i.etsystatic.com/35873478/r/il/718f23/4547719301/il_794xN.4547719301_h7jd.jpg"], "category": "Salon & Court", "materials": "Pure Silk", "dims": [70, 100], "origin": "Nevşehir, Cappadocia · Türkiye", "price": 1601, "etsy": "https://www.etsy.com/listing/1388664065", "tags": ["Pictorial"], "photo": true, "story": "Figures gather in a richly furnished room, gilded chairs and patterned floor rendered knot by knot in silk."},
   {"id": "two-deer", "ref": "No. E-5002", "title": "Two Deer", "subtitle": "A small wall piece in silk and wool", "image": "https://i.etsystatic.com/35873478/r/il/f0d147/6276589769/il_794xN.6276589769_j5cz.jpg", "images": ["https://i.etsystatic.com/35873478/r/il/f0d147/6276589769/il_794xN.6276589769_j5cz.jpg", "https://i.etsystatic.com/35873478/r/il/8f2637/6228534194/il_794xN.6228534194_ctnx.jpg", "https://i.etsystatic.com/35873478/r/il/a188b8/6276591027/il_794xN.6276591027_goh6.jpg", "https://i.etsystatic.com/35873478/r/il/3d89de/6276591657/il_794xN.6276591657_9hwj.jpg", "https://i.etsystatic.com/35873478/r/il/7b616b/6276592105/il_794xN.6276592105_aabd.jpg"], "category": "Landscape", "materials": "Silk & Wool", "dims": [45, 40], "origin": "Nevşehir, Cappadocia · Türkiye", "price": 298, "etsy": "https://www.etsy.com/listing/1770945002", "tags": ["Pictorial"], "photo": true, "story": "Two deer in a green meadow beneath a wide sky, framed by a traditional floral border. An accessible first piece."}
 ].concat(window.PROFESSIO_PRODUCTS);
+
+/* --------------------------------------------------------------------------
+   The soul of each piece: short stories shown on product pages
+   ("The Soul of the Piece") and, for the leading pieces, as a teaser in the
+   collection grid. Edit freely; keep each story to a few sentences.
+   -------------------------------------------------------------------------- */
+window.PROFESSIO_SOULS = {
+  /* ---- Leading pieces ---- */
+  "the-celebration": "Some rugs are woven; this one was kept alive. Strand by strand of silk, a garden was coaxed into being: musicians who never tire, dancers caught between one step and the next, a river that has been running for as long as the loom was strung. In Cappadocia they say the rock remembers every hand that touched it. Silk is the same. Stand close in the evening, when the lamps are low, and the whole scene seems to breathe, as if the party has only paused for you to arrive. A piece like this is not finished when it leaves the loom. It is finished when it finds the room that deserves it.",
+  "arcade-of-vases": "Imagine a row of cave chapels cut into soft Cappadocian stone, each niche holding a single vessel of flowers, each lit by its own small flame. That is the feeling of this rug. Beneath every arch a vase stands in quiet devotion, and the midnight border closes around them like the dark beyond the lamplight. The colours came from roots and leaves, steeped and waited on with a patience modern life has forgotten. It is a piece for the hour after dinner, when conversation slows and the silk begins to glow.",
+  "flower-market": "Somewhere a clock tower is about to strike, a flower seller is reaching for the last bouquet, and a child is tugging at a mother's hand. The weaver held that single moment still for the whole length of the work, row after row, without letting it slip. Two metres of silk, and not one figure is idle. Hang it where you pass every morning; it will give you a different detail each day for years.",
+  "turquoise-runner": "Long and narrow, like the passages carved through the rock beneath Nevşehir, this runner was made to lead somewhere. A single medallion floats at its heart, the colour of shallow water under winter light, and the flowers around it walk with you as you pass. Place it where people move, a hallway or a long bench, and let it do what it was made for: to accompany.",
+  "midnight-bloom": "Night falls fast over the valleys of Cappadocia, and the stone turns from honey to indigo in minutes. This rug lives in that hour. Pale blossoms open across a deep navy field, and the crimson border holds them like the last warmth of the day. It asks for soft light and rewards it.",
+  "madder-garden": "Madder is one of the oldest reds known to weavers, drawn from a humble root that hides its colour underground. Here it becomes a whole field, and on it a scattering of blossoms in blue, rose and cream, as if a garden had been carried in from outside and laid down to rest. Warm, generous, impossible to ignore.",
+  "turquoise-medallion": "Turquoise was the stone of protection along the old caravan roads, and this piece wears its colour like a charm. The medallion sits calm at the centre while paisley and gold flicker around the border. A small rug with the presence of a large one.",
+  "the-hunting-garden": "In the old court gardens, deer moved between the flowerbeds and birds called from every branch. The weaver has let them back in. Look closely and the garden fills with life: a turned head, a lifted wing, a hoof mid-step. It is a rug to be discovered slowly, a little more each time.",
+  "tree-of-life-night": "A tree of life is one of the oldest stories a weaver can tell: roots below, branches above, and the living world between. Here it grows from a black field, still as the inside of a cave, with two birds keeping watch in its crown. Austere and tender at once, it is the most quietly dramatic piece in the collection.",
+  "cottage-by-the-falls": "A cottage glows at the foot of a waterfall, and the water is woven in silk so it seems to move. Every leaf on the bank was a decision, every stone a choice of shade. It is the kind of place that exists only in memory or in thread, and here it has been kept for you.",
+
+  /* ---- Cappadocia silks ---- */
+  "crimson-roundel": "A circle has no beginning and no end, which is why weavers have always trusted it with their wishes. This roundel radiates from its centre like ripples in still water, red and blue and green moving outward to the fringe.",
+  "celadon-garden": "Celadon, the green of old porcelain and morning lichen on Cappadocian rock. The medallion rests at the centre of a dense, delicate garden, and the cream border frames it like a page of illumination.",
+  "indigo-medallion": "Indigo is a patient dye; it rises from the vat green and turns blue only as it meets the air. This small piece holds that slow transformation in its navy heart, framed by a border of cream and rust.",
+  "birds-of-the-medallion": "Birds have long been read as messengers in the weaving traditions of Anatolia. Here they gather around a red medallion as if waiting to carry it somewhere. Small, bright and full of intent.",
+  "aegean-medallion": "Light turquoise, like the sea seen from a high window. A floral medallion sits at its centre with nothing to prove, framed in cream and soft brown. A quiet rug for a quiet corner.",
+  "vase-of-flowers": "A vase of flowers beneath an arch: the same gesture weavers have made for centuries, an offering left at a doorway. Red, gold and white blooms rise from a deep blue ground, as fresh as the morning they were imagined.",
+  "songbird-medallion": "Listen closely and the border seems to sing. Birds and scrolling vines circle a crimson medallion, every curve a knot placed by hand. A cabinet piece with a voice.",
+  "small-crimson-bloom": "One flower, perfectly placed. This little silk proves that a rug does not need to be large to be complete. Set it on a table, a shelf or a wall and let it gather the room around it.",
+  "crimson-medallion": "Red, cream and navy: the classic triad of Anatolian weaving. Nothing here is new, and that is the point. It is a small, steady piece of a very long tradition.",
+  "teal-roundel": "A round rug softens a room: it rounds off corners and gathers chairs into a circle. This one does it in teal and gold, a small sky to set beneath your own.",
+  "royal-octagon": "Eight sides, like the stars and fountains of old courtyards. The royal octagon holds its floral medallion as carefully as a reliquary holds its treasure.",
+  "small-octagon": "The smallest of the royal silks, and perhaps the most intimate. A first piece for a new collector, or a quiet gift for an old one.",
+
+  /* ---- Pictorial & catalogue pieces ---- */
+  "the-grey-mare": "The mane is the heart of this piece: hundreds of shades of silver and ivory, knotted until they fall like real hair. A woman in crimson leans into the horse's warmth, and for a moment neither of them is in a hurry.",
+  "the-drawing-room": "Gilded chairs, a patterned floor, figures turned toward one another in conversation. The weaver has woven a room inside a rug, and invited you to step in.",
+  "two-deer": "Two deer stand in a green meadow under a wide sky, unafraid. A small, gentle piece, and often the first rug a new collector falls for.",
+  "the-recital": "The music has just begun. Someone leans toward the keyboard, someone else forgets the conversation. Silk catches every satin fold, so the whole salon shimmers as you pass.",
+  "the-courtship": "A bow, a hesitation, a room holding its breath. The weaver graded each fold of fabric through dozens of tones so that the moment reads as painted from afar and as knotted up close.",
+  "the-family-salon": "Three generations under a gilded mirror, all turning toward the smallest of them. Look down at their feet: there is a rug woven inside this rug, a quiet nod from one weaver to all who came before.",
+  "the-atelier": "A painter's studio, crowded with portfolios and visitors. It is a picture about making pictures, woven by a hand that knows exactly how long beauty takes.",
+  "the-grand-ballroom": "A whole court in motion beneath golden vaults. The architecture recedes into depth as if the rug had a far wall of its own. A statement piece for a long, generous wall.",
+  "the-wedding-procession": "Children run ahead with flowers, a bride walks on her father's arm, and old trees lean in to watch. Joyful and crowded, it is a celebration you can hang on a wall.",
+  "still-life-with-peonies": "Flowers fade; these will not. Lilac, rose and saffron petals float against deep teal, each with its own small gleam of silk.",
+  "the-duet": "Two figures share one piano bench and one melody. Cobalt silk carries the movement of the gown while the background stays soft, like a room that has gone quiet to listen.",
+  "the-poets-chamber": "In the manner of the miniature painters: flowing robes, curling drapery and a palette of lapis, rose and gold. It feels less like an object than a page torn from a book of verses.",
+  "spirit-of-the-garden": "A figure dissolves into blossom, bird and leaping deer, as if the garden were dreaming her. The drawing is so fine it asks you to come closer, and then closer again.",
+  "autumn-path": "Russet, amber and moss along a quiet riverside walk. Landscapes are where a weaver's colour grading becomes most subtle, every leaf a slightly different decision.",
+  "the-enchanted-forest": "A midnight sky, a whirl of figures and deer, blossoms tumbling through the dark. The swirling line of the miniature tradition, alive in jewel tones.",
+  "still-water": "Old trees and their reflections, woven with equal care. The surface of the pool is as patient as the hand that made it.",
+  "the-boating-party": "Silks and parasols drifting under the willows on a slow afternoon. The frame is gilded; the mood is lazy and golden.",
+  "the-spinning-wheel": "A mother at the spinning wheel, two children at her side. It is a fitting subject for a house built on thread: the first turn of the wheel, long before the first knot.",
+  "the-music-lesson": "Powdered wigs, pale silks and a harpsichord. The lesson has stopped for a moment while everyone admires the newest pupil.",
+  "the-tavern-feast": "Musicians, wine, a long table and a dancer in red. You can almost hear the room.",
+  "the-sacrifice": "Light breaks through darkness as an angel stays a raised hand. Drama, gesture and shadow, rendered with a Baroque painter's sense of the moment.",
+  "the-ark": "After the flood, the animals walk out beneath a rainbow woven in silk. A panoramic story told one knot at a time.",
+  "the-last-supper": "Twelve figures around a single table, each turning toward the centre. One of the most requested subjects in the pictorial tradition, in rich, saturated colour."
+};
+(function () {
+  var S = window.PROFESSIO_SOULS;
+  window.PROFESSIO_PRODUCTS.forEach(function (p) { if (S[p.id]) p.soul = S[p.id]; });
+})();

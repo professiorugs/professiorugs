@@ -65,7 +65,9 @@
           '<a class="hide-m" href="trade.html"' + (page === "trade" ? ' aria-current="page"' : "") + ">Trade Portal</a>" +
           '<button id="openDrawer" aria-label="Open your collection">Collection<span class="bag-count" id="bagCount"></span></button>' +
         "</nav>" +
-      "</div></header>" +
+      "</div>" +
+      '<span class="thread-progress" id="threadProgress" aria-hidden="true"></span>' +
+      "</header>" +
       '<div class="mobile-menu" id="mobileMenu">' +
         '<a href="index.html">Home</a>' +
         NAV.map(function (n) { return '<a href="' + n[0] + '">' + n[1] + "</a>"; }).join("") +
@@ -140,7 +142,12 @@
     document.body.insertAdjacentHTML("beforeend", footer());
     var h = $("#siteHeader");
     if (document.body.classList.contains("has-hero")) h.classList.add("is-over-hero");
-    var onScroll = function () { h.classList.toggle("is-scrolled", window.scrollY > 40); };
+    var thread = $("#threadProgress");
+    var onScroll = function () {
+      h.classList.toggle("is-scrolled", window.scrollY > 40);
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      thread.style.transform = "scaleX(" + (max > 0 ? Math.min(1, window.scrollY / max) : 0) + ")";
+    };
     onScroll(); window.addEventListener("scroll", onScroll, { passive: true });
     $("#menuToggle").addEventListener("click", function () {
       var open = document.body.classList.toggle("menu-open");
@@ -157,6 +164,9 @@
   /* ---------- Reveal on scroll ---------- */
   function initReveal() {
     var els = $$(".reveal");
+    $$(".product-grid, .pillars, .materials, .hereke-facts").forEach(function (g) {
+      $$(".reveal", g).forEach(function (el, i) { el.style.transitionDelay = (i % 3) * 120 + "ms"; });
+    });
     if (!("IntersectionObserver" in window)) { els.forEach(function (e) { e.classList.add("in"); }); return; }
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } });
@@ -168,12 +178,15 @@
   function card(p) {
     var flag = p.tags && p.tags[0] ? '<span class="card-flag">' + esc(p.tags[0]) + "</span>" : "";
     var meta = [p.materials, p.dims ? dimsText(p) : null].filter(Boolean).join(" · ") || "Specifications on request";
+    var silk = /silk/i.test(p.materials || "") ? " silk" : "";
+    var lead = p.soul && ((p.price || 0) >= 4000 || (p.tags || []).indexOf("Masterpiece") > -1);
+    var teaser = lead ? '<span class="card-soul">' + esc(p.soul.split(/(?<=[.!?])\s/)[0]) + "</span>" : "";
     var remote = /^https?:/.test(p.image);
     var price = typeof p.price === "number" ? '<span class="price">' + priceText(p) + "</span>" : '<span class="price on-request">On request</span>';
     return '<a class="card reveal" href="product.html?id=' + p.id + '">' +
-      '<div class="card-media">' + flag + '<img class="' + (remote ? "photo" : "art") + '" src="' + p.image + '" alt="' + esc(p.title) + '" loading="lazy" referrerpolicy="no-referrer"></div>' +
+      '<div class="card-media' + silk + '">' + flag + '<img class="' + (remote ? "photo" : "art") + '" src="' + p.image + '" alt="' + esc(p.title) + '" loading="lazy" referrerpolicy="no-referrer"></div>' +
       '<div class="card-body"><h3 class="card-title">' + esc(p.title) + "</h3>" + price +
-      '<span class="card-meta">' + esc(meta) + "</span></div></a>";
+      '<span class="card-meta">' + esc(meta) + "</span>" + teaser + "</div></a>";
   }
 
   function initFeatured() {
@@ -361,7 +374,9 @@
     }
     renderInfo();
 
+    if (p.soul && $("#soulSection")) { $("#soulText").textContent = p.soul; $("#soulSection").hidden = false; }
     var main = $("#pdpMain");
+    if (/silk/i.test(p.materials || "")) main.classList.add("silk");
     var gallery = [p.image].concat((p.images || []).filter(function (u) { return u !== p.image; }));
     function show(src) {
       main.classList.remove("zoomed");
@@ -583,7 +598,51 @@
     }
   }
 
+  /* ---------- Hero crossfade ---------- */
+  function initHeroSlides() {
+    var box = $(".hero-slides"); if (!box) return;
+    var slides = $$(".slide", box); if (slides.length < 2) return;
+    if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var i = 0, every = +box.dataset.interval || 7000;
+    setInterval(function () {
+      if (document.hidden) return;
+      slides[i].classList.remove("is-active");
+      i = (i + 1) % slides.length;
+      slides[i].classList.add("is-active");
+    }, every);
+  }
+
+  /* ---------- Cappadocia ridge: fairy chimneys drawn from a seed ---------- */
+  function initRidge() {
+    var svg = $("#capRidge"); if (!svg) return;
+    var seed = 7, rnd = function () { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+    var W = 1600, H = 260, out = "";
+    [[0.55, 46, "var(--cap-far)"], [1, 30, "var(--cap-near)"]].forEach(function (layer, li) {
+      var scale = layer[0], n = layer[1], d = "M0 " + H + " L0 " + (H - 40 * scale);
+      for (var k = 0; k < n; k++) {
+        var x = (k + rnd() * 0.6) * (W / n), w = (26 + rnd() * 34) * (li ? 1.25 : 0.85), h = (50 + rnd() * 120) * scale;
+        var base = H - 30 * scale - rnd() * 20;
+        // a rounded cone with a small cap stone
+        d += " L" + (x - w) + " " + base +
+             " Q" + (x - w * 0.35) + " " + (base - h * 0.7) + " " + (x - w * 0.18) + " " + (base - h) +
+             " Q" + (x - w * 0.45) + " " + (base - h - 6) + " " + (x - w * 0.2) + " " + (base - h - 12) +
+             " L" + (x + w * 0.2) + " " + (base - h - 12) +
+             " Q" + (x + w * 0.45) + " " + (base - h - 6) + " " + (x + w * 0.18) + " " + (base - h) +
+             " Q" + (x + w * 0.35) + " " + (base - h * 0.7) + " " + (x + w) + " " + base;
+      }
+      d += " L" + W + " " + (H - 40 * scale) + " L" + W + " " + H + " Z";
+      out += '<path d="' + d + '" fill="' + layer[2] + '"/>';
+    });
+    // a few lit cave windows
+    for (var c = 0; c < 9; c++) {
+      out += '<rect class="cave-light" x="' + Math.round(80 + rnd() * 1440) + '" y="' + Math.round(170 + rnd() * 50) + '" width="5" height="8" rx="2.5" style="animation-delay:' + (rnd() * 6).toFixed(1) + 's"/>';
+    }
+    svg.innerHTML = out;
+  }
+
   /* ---------- Boot ---------- */
+  initHeroSlides();
+  initRidge();
   initLayout();
   initFeatured();
   initShop();
