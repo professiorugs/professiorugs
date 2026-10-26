@@ -213,6 +213,9 @@
       var to = +el.getAttribute("data-count");
       if (reduceMotion || !("IntersectionObserver" in window) || counted[to]) { el.textContent = fmt(to); return; }
       el.textContent = "0";
+      // beside Hereke's 100, a square centimetre gains a row of ten knots for every ten counted
+      var cm2 = el.parentNode.parentNode.querySelector(".cm2");
+      if (cm2) cm2.style.setProperty("--rows", 0);
       var io = new IntersectionObserver(function (es) {
         if (!es[0].isIntersecting) return;
         io.disconnect(); counted[to] = true;
@@ -220,6 +223,7 @@
         (function step(now) {
           var u = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - u, 4);
           el.textContent = fmt(to * e);
+          if (cm2) cm2.style.setProperty("--rows", Math.floor(e * 10 + 1e-9));
           if (u < 1) requestAnimationFrame(step);
         })(t0);
       }, { threshold: 0.6 });
@@ -646,6 +650,73 @@
     links.forEach(function (l) { var t = $(l.getAttribute("href")); if (t) io.observe(t); });
   }
 
+  /* ---------- Heritage: the old craft in slow motion ---------- */
+  // Prologue: a thread is drawn down the timeline as you scroll, tying a knot at each date.
+  function initTimeline() {
+    var list = $(".thread-time"); if (!list || reduceMotion) return;
+    var items = $$("li", list), shown = 0, target = 0, raf = 0;
+    list.classList.add("tt-js");
+    list.style.setProperty("--tp", 0);
+    function tick() {
+      raf = 0;
+      shown += (target - shown) * 0.06;
+      if (Math.abs(target - shown) < 0.001) shown = target;
+      list.style.setProperty("--tp", shown.toFixed(4));
+      var reach = 6 + shown * (list.offsetHeight - 46); // the thread runs from 6px below the top to 40px above the bottom
+      items.forEach(function (li) { if (li.offsetTop + 15 <= reach) li.classList.add("is-tied"); });
+      if (shown !== target) raf = requestAnimationFrame(tick);
+    }
+    function measure() {
+      var r = list.getBoundingClientRect();
+      target = Math.max(target, Math.min(1, (innerHeight * 0.62 - r.top - 6) / (r.height - 46))); // the thread only ever grows
+      if (!raf && shown !== target) raf = requestAnimationFrame(tick);
+      if (target >= 1) removeEventListener("scroll", measure);
+    }
+    addEventListener("scroll", measure, { passive: true });
+    measure();
+  }
+  // Chapter I: three Turkish knots are tied in turn, a weft is laid over the row and
+  // beaten down, the row rests, then fades and the loom begins again.
+  function initKnotFig() {
+    var svg = $(".knot-svg"); if (!svg || reduceMotion || !("IntersectionObserver" in window)) return;
+    var warps = $$(".kwarp path", svg), row = $(".kr", svg), weftG = $(".kw", svg), weft = $$(".kw path[pathLength]", svg);
+    var knots = $$(".kn", svg).map(function (g) { return $$("path[pathLength]", g); });
+    var T = 16, t = -1.6, last = 0, raf = 0, seen = false;
+    function ease(x) { x = Math.max(0, Math.min(1, x)); return x * x * (3 - 2 * x); }
+    function show(paths, p) { paths.forEach(function (el) { el.style.strokeDasharray = p.toFixed(4) + " 1"; el.style.opacity = p > 0.002 ? 1 : 0; }); }
+    function render() {
+      warps.forEach(function (el, i) { show([el], t < 0 ? ease((t + 1.6 - i * 0.12) / 0.9) : 1); }); // the warps are strung once
+      var c = Math.max(0, t) % T;
+      knots.forEach(function (paths, k) { show(paths, ease((c - 0.5 - k * 2.1) / 1.8)); });
+      show(weft, ease((c - 7) / 1.8));
+      // the beat: a quick press past the row, then a small settle back
+      var y = c < 9.2 ? -14 : c < 9.55 ? -14 + 15 * Math.pow((c - 9.2) / 0.35, 2) : 1 - ease((c - 9.55) / 0.4);
+      weftG.setAttribute("transform", "translate(0 " + y.toFixed(2) + ")");
+      var fade = t < 0 ? 0 : 1 - ease((c - 13.6) / 1.2);
+      row.style.opacity = fade; weftG.style.opacity = fade;
+    }
+    function frame(now) {
+      raf = 0; if (!seen) return;
+      t += last ? Math.min((now - last) / 1000, 0.05) : 0; last = now;
+      render();
+      raf = requestAnimationFrame(frame);
+    }
+    render();
+    new IntersectionObserver(function (es) {
+      seen = es[es.length - 1].isIntersecting; last = 0;
+      if (seen && !raf) raf = requestAnimationFrame(frame);
+    }, { threshold: 0.3 }).observe(svg);
+  }
+  // Chapter IV: the naqsheh fills in a row at a time, from the bottom up, as the weaver reads it.
+  function initNaqsheh() {
+    var fig = $(".naqsheh"); if (!fig || reduceMotion || !("IntersectionObserver" in window)) return;
+    fig.classList.add("nq-js");
+    var io = new IntersectionObserver(function (es) {
+      if (es[es.length - 1].isIntersecting) { fig.classList.add("is-woven"); io.disconnect(); }
+    }, { threshold: 0.5 });
+    io.observe(fig);
+  }
+
   /* ---------- Forms ---------- */
   function initForms() {
     var params = new URLSearchParams(location.search);
@@ -935,25 +1006,120 @@
   }
 
   /* ---------- Flying carpet ---------- */
-  // A calm float: the rug rises and settles, its fringe stirs, a sheen of light
-  // crosses the silk now and then, and gold sparkles follow the pointer.
+  // A calm float: the rug rises and settles while a slow wave rolls through the
+  // cloth, its fringe stirs, a sheen of light crosses the silk now and then, and
+  // gold sparkles follow the pointer.
   function flyerHTML(p) {
-    var src = new URL(p.flyer || p.image, location.href).href, motes = "", fringe = "";
+    var src = new URL(p.flyer || p.image, location.href).href, motes = "";
     var size = p.flyerSize || (p.dims ? [Math.max(p.dims[0], p.dims[1]), Math.min(p.dims[0], p.dims[1])] : [3, 2]);
     for (var m = 0; m < 10; m++) {
       motes += '<b style="left:' + (8 + Math.random() * 84).toFixed(1) + "%;--t:" + (11 + Math.random() * 8).toFixed(1) + "s;--dl:" + (-Math.random() * 19).toFixed(1) + "s;--s:" + (2 + Math.random() * 2.5).toFixed(1) + 'px"></b>';
     }
-    if (p.flyer) { // the fringe on each short end stirs gently, a little more under the pointer
-      fringe = '<img class="flyer-fringe flyer-fringe--l" src="' + src + '" alt="" draggable="false">' +
-               '<img class="flyer-fringe flyer-fringe--r" src="' + src + '" alt="" draggable="false">';
-    }
-    return '<div class="flyer' + (p.flyer ? " has-fringe" : "") + '" role="img" aria-label="' + esc(p.title) + ", a handmade " + esc(kindText(p)) + ' floating in the air" style="aspect-ratio:' + size[0] + " / " + size[1] + '">' +
+    // the cut-out flight photograph has its fringe on the short ends, 5.4% and 4.6% of its length
+    return '<div class="flyer" role="img" aria-label="' + esc(p.title) + ", a handmade " + esc(kindText(p)) + ' floating in the air" style="aspect-ratio:' + size[0] + " / " + size[1] + '"' + (p.flyer ? ' data-fringe="0.054 0.954"' : "") + ">" +
       '<div class="flyer-aura"></div><div class="flyer-shadow"></div>' +
       '<div class="flyer-float"><div class="flyer-tilt">' +
-        '<img class="flyer-body" src="' + src + '" alt="" draggable="false" width="' + size[0] + '" height="' + size[1] + '">' + fringe +
-        '<span class="flyer-sheen" style="-webkit-mask-image:url(\'' + src + '\');mask-image:url(\'' + src + '\')"></span>' +
+        '<img class="flyer-body" src="' + src + '" alt="" draggable="false" width="' + size[0] + '" height="' + size[1] + '">' +
       "</div></div>" +
       '<div class="flyer-motes" aria-hidden="true">' + motes + "</div></div>";
+  }
+  // The wave is painted on a canvas in narrow vertical strips of the photograph.
+  // Each strip is sheared to follow two slow sine waves rolling along the rug's
+  // length, so neighbouring strips meet exactly and the cloth bends smoothly,
+  // with no steps or tears. Light and shade follow the slope of the cloth.
+  function waveFlyer(el) {
+    var tilt = $(".flyer-tilt", el), img = $(".flyer-body", el);
+    var cv = document.createElement("canvas"), ctx = cv.getContext && cv.getContext("2d");
+    if (reduceMotion || !tilt || !img || !ctx) return;
+    var fr = (el.getAttribute("data-fringe") || "0 1").split(" ").map(Number);
+    var src = document.createElement("canvas"), sctx = src.getContext("2d");
+    var W = 0, H = 0, PAD = 0, live = false, seen = true, raf = 0, last = 0, t = 0, hover = 0, hoverTo = 0;
+    cv.className = "flyer-canvas";
+    tilt.appendChild(cv);
+
+    function size() {
+      var dpr = Math.min(window.devicePixelRatio || 1, 2), f;
+      W = Math.round(tilt.offsetWidth * dpr); H = Math.round(tilt.offsetHeight * dpr);
+      if (!W || !H) return false;
+      // when the photograph is only a little larger than the screen needs, keep every one of its pixels:
+      // the strips are then copied one to one and the browser makes the single final resize
+      f = img.naturalWidth / W;
+      if (f > 1 && f < 1.35) { H = Math.round(H * f); W = img.naturalWidth; }
+      PAD = Math.round(H * 0.06); // the canvas reaches 6% above and below the rug for the wave
+      cv.width = W; cv.height = H + 2 * PAD;
+      src.width = W; src.height = H;
+      sctx.imageSmoothingQuality = "high";
+      sctx.drawImage(img, 0, 0, W, H);
+      return true;
+    }
+    // how far the cloth is lifted at u (0 to 1 along the length), in device pixels; down is positive
+    function lift(u, a, sway) {
+      var d = a * (0.72 * Math.sin(u * 5.3 - t * 0.85) + 0.28 * Math.sin(u * 9.4 - t * 1.37 + 1.3));
+      if (u < fr[0]) d += (fr[0] - u) * W * sway * Math.sin(t * 1.1);          // the fringe bends from where it is tied
+      else if (u > fr[1]) d += (u - fr[1]) * W * sway * Math.sin(t * 1.1 + 2.1);
+      return d;
+    }
+    function draw() {
+      var a = H * (0.012 + 0.007 * hover) * (0.86 + 0.14 * Math.sin(t * 0.29));
+      var sway = Math.tan((2 + 3.5 * hover) * Math.PI / 180), step = Math.max(8, Math.round(W / 90));
+      var x, x2, d0 = lift(0, a, sway), d1, i, u, s, k = 0.012 * H * 6.5 / W;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, W, H + 2 * PAD);
+      for (x = 0; x < W; x = x2) {
+        x2 = Math.min(W, x + step);
+        d1 = lift(x2 / W, a, sway);
+        // shear this strip so its left edge sits at d0 and its right edge at d1
+        ctx.setTransform(1, (d1 - d0) / (x2 - x), 0, 1, 0, PAD + d0 - x * (d1 - d0) / (x2 - x));
+        ctx.drawImage(src, x, 0, x2 - x, H, x, 0, x2 - x, H);
+        d0 = d1;
+      }
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.globalCompositeOperation = "source-atop";
+      // cloth rising to the right faces the light, falling to the right turns away from it
+      var lit = ctx.createLinearGradient(0, 0, W, 0), shade = ctx.createLinearGradient(0, 0, W, 0);
+      for (i = 0; i <= 24; i++) {
+        u = i / 24;
+        s = Math.max(-1.4, Math.min(1.4, (lift(u + 0.004, a, 0) - lift(u - 0.004, a, 0)) / (0.008 * W) / k));
+        lit.addColorStop(u, "rgba(255,240,214," + (Math.max(0, -s) * 0.1).toFixed(3) + ")");
+        shade.addColorStop(u, "rgba(26,14,8," + (Math.max(0, s) * 0.16).toFixed(3) + ")");
+      }
+      ctx.fillStyle = shade; ctx.fillRect(0, 0, W, H + 2 * PAD);
+      ctx.fillStyle = lit; ctx.fillRect(0, 0, W, H + 2 * PAD);
+      // a band of light crosses the silk over four seconds, every thirteen
+      var ph = ((t + 9) % 13) / 4.2;
+      if (ph < 1) {
+        var e = ph * ph * (3 - 2 * ph), cx = (-0.3 + 1.6 * e) * W, g = ctx.createLinearGradient(cx - 0.17 * W, -0.06 * W, cx + 0.17 * W, 0.06 * W);
+        g.addColorStop(0, "rgba(255,241,214,0)"); g.addColorStop(0.5, "rgba(255,241,214,.13)"); g.addColorStop(1, "rgba(255,241,214,0)");
+        ctx.fillStyle = g; ctx.fillRect(0, 0, W, H + 2 * PAD);
+      }
+      ctx.globalCompositeOperation = "source-over";
+    }
+    function frame(now) {
+      raf = 0;
+      if (!seen || document.hidden) return;
+      var dt = last ? Math.min((now - last) / 1000, 0.05) : 0;
+      last = now; t += dt;
+      hover += (hoverTo - hover) * Math.min(1, dt * 1.4); // ease into and out of the pointer over a second or two
+      draw();
+      if (!live) { live = true; el.classList.add("is-live"); }
+      raf = requestAnimationFrame(frame);
+    }
+    function play() { if (seen && !document.hidden && W && !raf) { last = 0; raf = requestAnimationFrame(frame); } }
+    function start() {
+      if (!size()) return;
+      play();
+      if ("IntersectionObserver" in window) {
+        new IntersectionObserver(function (es) { seen = es[es.length - 1].isIntersecting; play(); }, { rootMargin: "80px" }).observe(el);
+      }
+      if ("ResizeObserver" in window) {
+        new ResizeObserver(function () { if (size() && live) draw(); }).observe(tilt);
+      }
+      document.addEventListener("visibilitychange", play);
+      el.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") hoverTo = 1; });
+      el.addEventListener("pointerleave", function () { hoverTo = 0; });
+    }
+    if (img.complete && img.naturalWidth) start();
+    else img.addEventListener("load", start);
   }
   function watchFlyer(el) {
     if (!el) return;
@@ -962,6 +1128,7 @@
         es.forEach(function (e) { e.target.classList.toggle("is-paused", !e.isIntersecting); });
       }).observe(el);
     }
+    waveFlyer(el);
     // gold sparkles trail the pointer across the rug
     if (reduceMotion || !matchMedia("(hover: hover)").matches) return;
     var last = 0, lx = -99, ly = -99, alive = 0;
@@ -1020,6 +1187,9 @@
   initZoomer();
   initFilms();
   initChapters();
+  initTimeline();
+  initKnotFig();
+  initNaqsheh();
   initForms();
   initAccordions();
   initReveal();

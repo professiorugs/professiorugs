@@ -43,16 +43,17 @@ A rug's address comes from its title and origin: "Midnight Bloom" from Hereke be
 - `price`: a round number in US dollars (5600, 13500). Etsy checkout always shows the price set on the Etsy listing, so keep the two the same.
 
 ## The flying carpet
-The rug with `flagship: true` in `js/products.js` floats on the home page and on its own page. `flyer` points to a straightened, landscape cut-out of the rug with a transparent background and its fringe on the short ends (`images/collection/midnight-bloom-flight.webp`), and `flyerSize` gives its pixel size. The fringe stirs gently, a little more under the mouse, and gold sparkles follow the pointer.
+The rug with `flagship: true` in `js/products.js` floats on the home page and on its own page. `flyer` points to a straightened, landscape cut-out of the rug with a transparent background and its fringe on the short ends (`images/collection/midnight-bloom-flight.webp`), and `flyerSize` gives its pixel size. A slow wave rolls along the cloth and the fringe stirs, both a little more under the mouse, and gold sparkles follow the pointer. The wave is painted on a canvas from the same photograph (`waveFlyer` in `js/main.js`); visitors with "reduce motion" see the still photograph. `data-fringe` on the `.flyer` element says where the fringe begins on each short end, as a share of the length (`0.054 0.954` for the current cut-out); change it if a new cut-out has a longer or shorter fringe.
 
 ## Motion
 All motion is slow and switches off for visitors who choose "reduce motion":
 1. Rug photos in the grids appear row by row as a thin gold thread passes down them.
 2. On a rug page the main photo unrolls from the top.
-3. The flying carpet's fringe stirs on hover, and gold sparkles follow the mouse.
+3. The flying carpet's cloth waves slowly and its fringe stirs, a little more on hover, and gold sparkles follow the mouse.
 4. A short gold thread draws itself under section titles.
 5. A soft candle glow flickers in the Cappadocia section on the home page.
-6. Numbers with `data-count` (knot counts, Hereke's 100+) count up when they come into view.
+6. Numbers with `data-count` (knot counts, Hereke's 100+) count up when they come into view. Beside Hereke's 100+, a square centimetre fills with ten rows of ten knots as the number counts.
+7. Heritage & Origins: in the Prologue a twisted thread draws down the timeline as you scroll and ties a small knot at each date; in Chapter I three Turkish knots are tied on the loom, a weft is laid over them and beaten down, again and again; in Chapter IV the naqsheh (knot chart) fills in a row at a time from the bottom up. The drawings are inline SVG in `heritage/index.html`; the timing is in `initTimeline`, `initKnotFig` and `initNaqsheh` in `js/main.js`.
 
 ## The intro
 The wordmark intro plays on the home page once per browser tab session (`sessionStorage`). It waits about five seconds for a click or tap, then dissolves on its own. Visitors with "reduce motion" switched on never see it. To preview it again, open `https://professiorugs.com/?intro`.

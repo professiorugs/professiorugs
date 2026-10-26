@@ -788,22 +788,16 @@ fieldset.field { border: 0; padding: 0; margin: 0; }
 .flagship--pdp .flagship-stage { max-width: 860px; margin: 0 auto; }
 .flagship-caption { position: relative; text-align: center; font-family: var(--serif); font-style: italic; font-size: 1.2rem; color: var(--tan-deep); margin-top: 18px; }
 
-/* The rug itself: one clean cut-out photograph, floating slowly. No ripple. */
-@property --amp { syntax: "<angle>"; inherits: true; initial-value: 2deg; }
-.flyer { --amp: 2deg; position: relative; perspective: 1600px; perspective-origin: 50% 0%; margin: 4% 5% 13%; transition: --amp 1.6s var(--ease); }
-.flyer:hover { --amp: 6deg; }
+/* The rug itself: one clean cut-out photograph, floating slowly. Once the script
+   is running, a canvas takes its place and a slow wave rolls through the cloth. */
+.flyer { position: relative; perspective: 1600px; perspective-origin: 50% 0%; margin: 4% 5% 13%; }
 .flyer-float, .flyer-tilt { position: absolute; inset: 0; transform-style: preserve-3d; }
 .flyer-float { animation: fly-float 10s ease-in-out infinite; }
 .flyer-tilt { transform: rotateX(20deg); animation: fly-tilt 15s ease-in-out infinite; }
 .flyer-tilt img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; -webkit-user-select: none; user-select: none; -webkit-user-drag: none; }
-.has-fringe .flyer-body { clip-path: inset(0 4.4% 0 5%); }
-.flyer-fringe { animation: fringe-sway 5.6s ease-in-out infinite; }
-.flyer-fringe--l { clip-path: inset(0 94.6% 0 0); transform-origin: 5.4% 50%; }
-.flyer-fringe--r { clip-path: inset(0 0 0 95.4%); transform-origin: 95.4% 50%; animation-name: fringe-sway-r; animation-delay: -2.3s; }
-.flyer-sheen { position: absolute; inset: 0; pointer-events: none;
-  -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  background: linear-gradient(102deg, transparent 40%, rgba(255, 241, 214, .16) 50%, transparent 60%) no-repeat;
-  background-size: 300% 100%; background-position: 120% 0; animation: fly-sheen 12s ease-in-out 3s infinite; }
+.flyer-canvas { position: absolute; left: 0; top: -6%; width: 100%; height: 112%; display: none; pointer-events: none; }
+.flyer.is-live .flyer-canvas { display: block; }
+.flyer.is-live .flyer-body { visibility: hidden; }
 .flyer-aura { position: absolute; inset: -14% -10%; border-radius: 50%; pointer-events: none;
   background: radial-gradient(closest-side, rgba(233, 190, 120, .2), rgba(233, 190, 120, .06) 60%, transparent);
   filter: blur(12px); animation: fly-aura 10s ease-in-out infinite; }
@@ -824,9 +818,6 @@ fieldset.field { border: 0; padding: 0; margin: 0; }
 
 @keyframes fly-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3.2%); } }
 @keyframes fly-tilt { 0%, 100% { transform: rotateX(19deg) rotateZ(-.5deg); } 50% { transform: rotateX(22deg) rotateZ(.5deg); } }
-@keyframes fringe-sway { 0%, 100% { transform: skewY(calc(var(--amp) * -1)); } 50% { transform: skewY(var(--amp)); } }
-@keyframes fringe-sway-r { 0%, 100% { transform: skewY(var(--amp)); } 50% { transform: skewY(calc(var(--amp) * -1)); } }
-@keyframes fly-sheen { 0%, 60% { background-position: 120% 0; } 92%, 100% { background-position: -20% 0; } }
 @keyframes fly-aura { 0%, 100% { opacity: .75; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3%); } }
 @keyframes fly-shadow { 0%, 100% { transform: scale(1); opacity: .9; } 50% { transform: scale(.84); opacity: .55; } }
 @keyframes fly-mote { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: .7; } 80% { opacity: .35; } 100% { transform: translate(10px, -260px); opacity: 0; } }
@@ -841,7 +832,7 @@ fieldset.field { border: 0; padding: 0; margin: 0; }
   .flyer { margin: 2% 3% 14%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .flyer-motes, .flyer-sheen { display: none; }
+  .flyer-motes { display: none; }
 }
 
 /* ==========================================================================
@@ -933,3 +924,58 @@ h1 > .eyebrow { margin-bottom: 20px; line-height: 1.6; }
 .faq summary::after { content: "+"; position: absolute; right: 4px; top: 18px; font-family: var(--sans); font-size: 1.3rem; color: var(--bronze); transition: transform .4s var(--ease); }
 .faq details[open] summary::after { transform: rotate(45deg); }
 .faq details p { margin: 0 0 24px; max-width: 60ch; }
+
+/* ==========================================================================
+   Round 8: the old craft, in slow motion (Heritage & Origins)
+   ========================================================================== */
+/* Prologue: a thread drawn down through time as you scroll, a knot tied at each date */
+.thread-time { position: relative; list-style: none; margin: 0 auto; padding: 0; max-width: 1000px; }
+.thread-time::before, .thread-time::after { content: ""; position: absolute; top: 6px; bottom: 40px; left: 50%; width: 3px; margin-left: -1.5px; border-radius: 2px; }
+.thread-time::before { background: rgba(58, 42, 32, .1); }
+.thread-time::after { background: repeating-linear-gradient(155deg, var(--bronze) 0 3px, var(--bronze-light) 3px 5px); transform-origin: 50% 0; transform: scaleY(var(--tp, 1)); }
+.thread-time li { position: relative; width: 50%; padding: 0 64px 72px 0; text-align: right; }
+.thread-time li:nth-child(even) { margin-left: 50%; padding: 0 0 72px 64px; text-align: left; }
+.thread-time li + li { margin-top: -36px; }
+.tt-knot { position: absolute; top: -6px; right: -21px; z-index: 1; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%;
+  background: var(--cream); border: 1px solid rgba(58, 42, 32, .16); transition: border-color 1.4s var(--ease), box-shadow 1.4s var(--ease); }
+.thread-time li:nth-child(even) .tt-knot { right: auto; left: -21px; }
+.tt-knot svg { width: 24px; height: 24px; fill: none; stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
+.tt-knot .w { stroke: var(--tan-deep); stroke-width: 1.3; }
+.tt-knot .k { stroke: var(--madder); stroke-width: 1.9; stroke-dasharray: 1 1; }
+.tt-year { display: block; font-family: var(--serif); font-size: clamp(1.7rem, 2.6vw, 2.3rem); font-weight: 300; line-height: 1.1; color: var(--bronze); }
+.thread-time h3 { font-family: var(--sans); font-size: .68rem; font-weight: 400; letter-spacing: .24em; text-transform: uppercase; color: var(--espresso); margin: 12px 0 10px; }
+.thread-time p { display: inline-block; max-width: 400px; margin: 0; font-size: .95rem; line-height: 1.75; color: var(--espresso-soft); }
+.thread-time li.is-tied .tt-knot { border-color: var(--bronze-light); box-shadow: 0 0 0 7px rgba(176, 141, 99, .1); }
+.tt-js .tt-knot .k { stroke-dashoffset: 1; opacity: 0; transition: stroke-dashoffset 2.2s var(--weave) .15s, opacity .3s .15s; }
+.tt-js li.is-tied .tt-knot .k { stroke-dashoffset: 0; opacity: 1; }
+.tt-js li > :not(.tt-knot) { opacity: .2; transform: translateY(10px); transition: opacity 1.6s var(--ease), transform 1.6s var(--ease); }
+.tt-js li.is-tied > :not(.tt-knot) { opacity: 1; transform: none; }
+@media (max-width: 760px) {
+  .thread-time::before, .thread-time::after { left: 21px; }
+  .thread-time li, .thread-time li:nth-child(even) { width: auto; margin-left: 0; padding: 0 0 52px 70px; text-align: left; }
+  .thread-time li + li { margin-top: 0; }
+  .tt-knot, .thread-time li:nth-child(even) .tt-knot { left: 0; right: auto; }
+}
+
+/* Chapter I: a Turkish knot tied on the loom, row after row */
+.knot-fig { max-width: 400px; margin: clamp(30px, 4vw, 48px) 0 0; }
+.knot-svg { display: block; width: 100%; height: auto; }
+.knot-fig .caption { max-width: 380px; line-height: 1.6; }
+
+/* Chapter III: one square centimetre of a 10'luk, a row of ten knots for every ten counted */
+.hereke-facts > div { position: relative; }
+.cm2 { position: absolute; top: 34px; right: 28px; width: 44px; height: 44px; border: 1px solid rgba(140, 106, 69, .35); }
+.cm2::before { content: ""; position: absolute; inset: 2px; background: radial-gradient(circle, var(--bronze) 0 1.1px, transparent 1.5px) 0 0 / 10% 10%;
+  clip-path: inset(calc((10 - var(--rows, 10)) * 10%) 0 0 0); }
+
+/* Chapter IV: the naqsheh fills in a row at a time, from the bottom up */
+.naqsheh { display: grid; grid-template-columns: minmax(150px, 210px) 1fr; gap: 26px; align-items: end; margin: 34px 0 30px; }
+.nq-svg { display: block; width: 100%; height: auto; }
+.naqsheh .caption { max-width: 260px; margin: 0; line-height: 1.6; color: var(--tan-deep); }
+.nq-js .nq-rows > g { opacity: 0; transition: opacity .5s var(--ease) var(--d); }
+.nq-js.is-woven .nq-rows > g { opacity: 1; }
+.nq-js .nq-line { opacity: 0; }
+.nq-js.is-woven .nq-line { animation: nq-line 4.2s linear forwards; }
+@keyframes nq-line { 0% { opacity: 0; transform: translateY(0); } 4%, 92% { opacity: .9; } 100% { opacity: 0; transform: translateY(-168px); } }
+@media (max-width: 520px) { .naqsheh { grid-template-columns: 1fr; } .nq-svg { max-width: 240px; } }
+
