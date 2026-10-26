@@ -17,56 +17,56 @@ window.PROFESSIO_PRODUCTS = [
   {
     id: "the-recital", ref: "No. 010", title: "The Recital",
     subtitle: "A salon gathers around the keyboard",
-    image: "images/collection/p2-1.jpg", category: "Salon & Court",
+    image: "/images/collection/p2-1.jpg", category: "Salon & Court",
     materials: "Wool & Silk", dims: [100, 150], tags: ["Best Seller"],
     story: "Silk highlights catch the light across satin gowns and gilded chairs, while the wool ground holds the deep crimson of the drapery. A drawing-room scene rendered thread by thread, with the patience of an old master."
   },
   {
     id: "the-courtship", ref: "No. 011", title: "The Courtship",
     subtitle: "A bow, a blush, a gathered room",
-    image: "images/collection/p2-2.jpg", category: "Salon & Court",
+    image: "/images/collection/p2-2.jpg", category: "Salon & Court",
     materials: "Wool & Silk", dims: [160, 105], tags: ["Best Seller"],
     story: "Pale celadon silk on the suitor's coat, coral on the lady's skirts. The weaver has graded each fold of fabric through dozens of tones, so the scene reads as painted from across the room and as woven from up close."
   },
   {
     id: "the-family-salon", ref: "No. 022", title: "The Family Salon",
     subtitle: "Three generations under a gilded mirror",
-    image: "images/collection/p2-3.jpg", category: "Salon & Court",
+    image: "/images/collection/p2-3.jpg", category: "Salon & Court",
     materials: "Wool & Silk", dims: [155, 105], tags: ["Best Seller"],
     story: "An emerald-draped interior where every figure turns toward the child at its centre. Note the rug woven within the rug at their feet: a quiet signature of the tradition."
   },
   {
     id: "the-atelier", ref: "No. 028", title: "The Atelier",
     subtitle: "Painters, patrons and an easel by the window",
-    image: "images/collection/p3-1.jpg", category: "Salon & Court",
+    image: "/images/collection/p3-1.jpg", category: "Salon & Court",
     materials: "Wool & Silk", dims: [150, 100], tags: ["Best Seller"],
     story: "A study of an artist's studio, crowded with portfolios, sculpture and visitors. The window light is built from silk, so the piece shifts in tone as you walk past it."
   },
   {
     id: "the-grand-ballroom", ref: "No. 018", title: "The Grand Ballroom",
     subtitle: "A procession beneath gilded vaults",
-    image: "images/collection/p3-2.jpg", category: "Salon & Court",
+    image: "/images/collection/p3-2.jpg", category: "Salon & Court",
     materials: "Wool & Silk", dims: [200, 120], tags: ["Best Seller"],
     story: "The largest of our salon pieces: a full court in motion, its golden architecture receding into depth. A statement work for a long wall or a stairwell."
   },
   {
     id: "the-wedding-procession", ref: "No. 021", title: "The Wedding Procession",
     subtitle: "A village party spills into the garden",
-    image: "images/collection/p3-3.jpg", category: "Garden & Street",
+    image: "/images/collection/p3-3.jpg", category: "Garden & Street",
     materials: "Wool & Silk", dims: [160, 105], tags: ["Best Seller"],
     story: "Morning light through old trees, a bride on her father's arm, children running ahead with flowers. Warm, joyful and dense with incident."
   },
   {
     id: "still-life-with-peonies", ref: "No. 010-B", title: "Still Life with Peonies",
     subtitle: "Flowers, porcelain and a marble muse",
-    image: "images/collection/p4-1.jpg", category: "Still Life & Portrait",
+    image: "/images/collection/p4-1.jpg", category: "Still Life & Portrait",
     materials: "Wool & Silk", dims: [80, 60], tags: ["Best Seller"],
     story: "An intimate cabinet piece. Lilac, rose and saffron blooms float against a deep teal ground, with silk giving each petal its sheen."
   },
   {
     id: "the-grey-mare", ref: "No. 023-A", title: "The Grey Mare",
     subtitle: "A rider in crimson, a horse in silver",
-    image: "images/collection/p4-2.jpg", category: "Still Life & Portrait",
+    image: "/images/collection/p4-2.jpg", category: "Still Life & Portrait",
     materials: "Pure Silk", dims: [100, 70], tags: ["Best Seller"],
     story: "The mane alone is a feat: hundreds of shades of grey and ivory, knotted to fall like real hair. A contemporary subject in a centuries-old technique.",
     price: 1653, origin: "Nevşehir, Cappadocia · Türkiye", etsy: "https://www.etsy.com/listing/1388640893", photo: true,
@@ -75,37 +75,37 @@ window.PROFESSIO_PRODUCTS = [
   {
     id: "the-duet", ref: "No. 023-B", title: "The Duet",
     subtitle: "Two figures at the piano",
-    image: "images/collection/p4-3.jpg", category: "Still Life & Portrait",
+    image: "/images/collection/p4-3.jpg", category: "Still Life & Portrait",
     materials: "Wool & Silk", dims: [100, 70], tags: ["Best Seller"],
     story: "Cobalt silk carries the movement of the gown, while the wool background stays soft and painterly. Quiet, romantic, unmistakably handmade."
   },
   {
     id: "the-poets-chamber", ref: "No. 023-C", title: "The Poet's Chamber",
     subtitle: "Persian miniature, framed",
-    image: "images/collection/p5-1.jpg", category: "Persian Miniature",
+    image: "/images/collection/p5-1.jpg", category: "Persian Miniature",
     materials: "Wool & Silk", dims: [100, 70], tags: ["Framed"],
     story: "In the manner of the Isfahan miniature painters: flowing robes, curling drapery and a palette of lapis, rose and gold. Presented in a carved gilt frame."
   },
   {
     id: "spirit-of-the-garden", ref: "No. 023-D", title: "Spirit of the Garden",
     subtitle: "Persian miniature, framed",
-    image: "images/collection/p5-2.jpg", category: "Persian Miniature",
+    image: "/images/collection/p5-2.jpg", category: "Persian Miniature",
     materials: "Wool & Silk", dims: [100, 70], tags: ["Framed"],
     story: "A figure dissolves into blossoms, birds and leaping deer. The fine scale of the drawing asks for a very dense knot, and rewards close looking."
   },
   {
     id: "the-celebration", ref: "No. 023-E", title: "Dance with Nature",
     subtitle: "A museum-scale work in pure silk",
-    image: "images/collection/p5-3.jpg", category: "Persian Miniature",
+    image: "/images/collection/p5-3.jpg", category: "Persian Miniature",
     materials: "Pure Silk", dims: [200, 300], tags: ["Masterpiece"],
     story: "Two by three metres of pure silk: musicians, dancers and sleepers beneath flowering trees, framed by an illuminated border. Pieces of this scale take a workshop years, and rarely leave private hands.",
-    price: 21640, origin: "Nevşehir, Cappadocia · Türkiye", etsy: "https://www.etsy.com/listing/1388668425", photo: true, flagship: true,
+    price: 21640, origin: "Nevşehir, Cappadocia · Türkiye", etsy: "https://www.etsy.com/listing/1388668425", photo: true,
     images: ["https://i.etsystatic.com/35873478/r/il/a48405/4547818031/il_794xN.4547818031_885l.jpg", "https://i.etsystatic.com/35873478/r/il/c5f39e/4500458480/il_794xN.4500458480_ffrz.jpg", "https://i.etsystatic.com/35873478/r/il/f16679/4547821219/il_794xN.4547821219_89br.jpg", "https://i.etsystatic.com/35873478/r/il/4c3146/4500458684/il_794xN.4500458684_1c12.jpg", "https://i.etsystatic.com/35873478/r/il/a56e9e/4547821253/il_794xN.4547821253_a9og.jpg"]
   },
   {
     id: "flower-market", ref: "No. E-3526", title: "The Flower Market",
     subtitle: "A riverside promenade, late afternoon",
-    image: "images/collection/p6-1.jpg", category: "Garden & Street",
+    image: "/images/collection/p6-1.jpg", category: "Garden & Street",
     materials: "Pure Silk", dims: [200, 120], tags: ["New Arrival"],
     story: "Parasols, a clock tower and a cart overflowing with blooms: a riverside promenade woven entirely in silk, two metres wide.",
     price: 12354, origin: "Nevşehir, Cappadocia · Türkiye", etsy: "https://www.etsy.com/listing/1381893526", photo: true,
@@ -114,14 +114,14 @@ window.PROFESSIO_PRODUCTS = [
   {
     id: "autumn-path", ref: "Special Selection", title: "Autumn Path",
     subtitle: "Maples by still water",
-    image: "images/collection/p7-1.jpg", category: "Landscape",
+    image: "/images/collection/p7-1.jpg", category: "Landscape",
     materials: null, dims: null, tags: ["Special Selection"], specsPending: true,
     story: "Russet, amber and moss in a quiet riverside walk. Landscape pieces bring the weaver's colour grading to its most subtle."
   },
   {
     id: "cottage-by-the-falls", ref: "No. E-1800", title: "Cottage by the Falls",
     subtitle: "A mountain idyll in full colour",
-    image: "images/collection/p7-2.jpg", category: "Landscape",
+    image: "/images/collection/p7-2.jpg", category: "Landscape",
     materials: "Pure Silk", dims: [155, 95], tags: ["Special Selection"],
     story: "Cascading water rendered in white silk, a stone cottage glowing in the valley. Bright, warm and welcoming.",
     price: 4178, origin: "Nevşehir, Cappadocia · Türkiye", etsy: "https://www.etsy.com/listing/1374631800", photo: true,
@@ -130,63 +130,63 @@ window.PROFESSIO_PRODUCTS = [
   {
     id: "the-enchanted-forest", ref: "Special Selection", title: "The Enchanted Forest",
     subtitle: "Persian miniature in jewel tones",
-    image: "images/collection/p7-3.jpg", category: "Persian Miniature",
+    image: "/images/collection/p7-3.jpg", category: "Persian Miniature",
     materials: null, dims: null, tags: ["Special Selection"], specsPending: true,
     story: "A whirl of figures, deer and blossom on a midnight-blue sky, drawn in the swirling line of the miniature tradition."
   },
   {
     id: "still-water", ref: "Special Selection", title: "Still Water",
     subtitle: "Old trees and their reflections, framed",
-    image: "images/collection/p7-4.jpg", category: "Landscape",
+    image: "/images/collection/p7-4.jpg", category: "Landscape",
     materials: null, dims: null, tags: ["Special Selection", "Framed"], specsPending: true,
     story: "A green, shaded pool beneath ancient trunks. The reflections are woven as carefully as the trees themselves."
   },
   {
     id: "the-boating-party", ref: "Special Selection", title: "The Boating Party",
     subtitle: "An afternoon on the river, framed",
-    image: "images/collection/p8-1.jpg", category: "Garden & Street",
+    image: "/images/collection/p8-1.jpg", category: "Garden & Street",
     materials: null, dims: null, tags: ["Special Selection", "Framed"], specsPending: true,
     story: "Silks and parasols drifting under the willows, presented in a carved gilt frame."
   },
   {
     id: "the-spinning-wheel", ref: "Special Selection", title: "The Spinning Wheel",
     subtitle: "A mother, two children and the loom's first step",
-    image: "images/collection/p8-2.jpg", category: "Still Life & Portrait",
+    image: "/images/collection/p8-2.jpg", category: "Still Life & Portrait",
     materials: null, dims: null, tags: ["Special Selection", "Framed"], specsPending: true,
     story: "A family interior in traditional dress, with a spinning wheel at its heart: a fitting subject for a house built on thread."
   },
   {
     id: "the-music-lesson", ref: "Special Selection", title: "The Music Lesson",
     subtitle: "A salon at the harpsichord, framed",
-    image: "images/collection/p8-3.jpg", category: "Salon & Court",
+    image: "/images/collection/p8-3.jpg", category: "Salon & Court",
     materials: null, dims: null, tags: ["Special Selection", "Framed"], specsPending: true,
     story: "A crowded salon in powdered wigs and pale silks, framed in silver-gilt."
   },
   {
     id: "the-tavern-feast", ref: "Special Selection", title: "The Tavern Feast",
     subtitle: "Music, wine and a dancer in red",
-    image: "images/collection/p8-4.jpg", category: "Salon & Court",
+    image: "/images/collection/p8-4.jpg", category: "Salon & Court",
     materials: null, dims: null, tags: ["Special Selection", "Framed"], specsPending: true,
     story: "A lively inn scene with musicians and a long table, framed in heavy carved gold."
   },
   {
     id: "the-sacrifice", ref: "Special Selection", title: "The Sacrifice",
     subtitle: "An angel stays the hand",
-    image: "images/collection/p9-1.jpg", category: "Sacred & Allegory",
+    image: "/images/collection/p9-1.jpg", category: "Sacred & Allegory",
     materials: null, dims: null, tags: ["Special Selection"], specsPending: true,
     story: "A dramatic Old Testament scene after the Baroque masters, all chiaroscuro and gesture."
   },
   {
     id: "the-ark", ref: "Special Selection", title: "The Ark",
     subtitle: "After the flood, beneath the rainbow",
-    image: "images/collection/p9-2.jpg", category: "Sacred & Allegory",
+    image: "/images/collection/p9-2.jpg", category: "Sacred & Allegory",
     materials: null, dims: null, tags: ["Special Selection"], specsPending: true,
     story: "A panoramic procession of animals and figures, crowned by a rainbow woven in silk."
   },
   {
     id: "the-last-supper", ref: "Special Selection", title: "The Last Supper",
     subtitle: "Twelve figures around the table",
-    image: "images/collection/p9-3.jpg", category: "Sacred & Allegory",
+    image: "/images/collection/p9-3.jpg", category: "Sacred & Allegory",
     materials: null, dims: null, tags: ["Special Selection"], specsPending: true,
     story: "One of the most requested subjects in the pictorial tradition, rendered in rich, saturated colour."
   }
@@ -200,7 +200,7 @@ window.PROFESSIO_PRODUCTS = [
 window.PROFESSIO_PRODUCTS = [
   {"id": "arcade-of-vases", "ref": "No. E-9967", "title": "The Arcade of Vases", "subtitle": "Pure Cappadocia silk, framed in midnight blue", "image": "https://i.etsystatic.com/35873478/r/il/9f7fda/6860142506/il_794xN.6860142506_bhvg.jpg", "images": ["https://i.etsystatic.com/35873478/r/il/9f7fda/6860142506/il_794xN.6860142506_bhvg.jpg", "https://i.etsystatic.com/35873478/r/il/3f0316/6908122231/il_794xN.6908122231_24o5.jpg", "https://i.etsystatic.com/35873478/r/il/5763ac/6908122295/il_794xN.6908122295_muv2.jpg", "https://i.etsystatic.com/35873478/r/il/25ec56/6908122451/il_794xN.6908122451_9ju5.jpg", "https://i.etsystatic.com/35873478/r/il/b4b4a2/6908122567/il_794xN.6908122567_qzsm.jpg"], "category": "Cappadocia Silk", "materials": "Pure Silk", "dyes": "Natural plant-root dyes", "dims": [150, 105], "shape": "Rectangle", "origin": "Nevşehir, Cappadocia · Türkiye", "price": 13535, "etsy": "https://www.etsy.com/listing/4305069967", "tags": ["Masterpiece", "Cappadocia Silk"], "photo": true, "story": "A procession of arches, each sheltering a vase in bloom, held within a dark navy floral border. Red, saffron, rose and leaf green are dyed from plant roots and knotted in pure silk, so the piece glows as the light moves across it. Our most ambitious Cappadocia work."},
   {"id": "turquoise-runner", "ref": "No. E-8770", "title": "Turquoise Runner", "subtitle": "A long medallion in teal and rose", "image": "https://i.etsystatic.com/35873478/r/il/3af2d7/6860088540/il_794xN.6860088540_reoh.jpg", "images": ["https://i.etsystatic.com/35873478/r/il/3af2d7/6860088540/il_794xN.6860088540_reoh.jpg", "https://i.etsystatic.com/35873478/r/il/37eedc/6860088544/il_794xN.6860088544_lslz.jpg", "https://i.etsystatic.com/35873478/r/il/a0fc46/6908068837/il_794xN.6908068837_3ir2.jpg", "https://i.etsystatic.com/35873478/r/il/26ded7/6908068925/il_794xN.6908068925_agb2.jpg", "https://i.etsystatic.com/35873478/r/il/e5ace3/6860088528/il_794xN.6860088528_rllh.jpg", "https://i.etsystatic.com/35873478/r/il/a3db87/6860088538/il_794xN.6860088538_mndj.jpg"], "category": "Cappadocia Silk", "materials": "Pure Silk", "dyes": "Natural plant-root dyes", "dims": [137, 65], "shape": "Runner", "origin": "Nevşehir, Cappadocia · Türkiye", "price": 6030, "etsy": "https://www.etsy.com/listing/4305058770", "tags": ["Cappadocia Silk", "Runner"], "photo": true, "story": "A central medallion floats on a teal field, surrounded by leaves and blossoms in cream, coral and green. Its long proportions suit a hallway, a bench end or a narrow wall."},
-  {"id": "midnight-bloom", "ref": "No. E-0382", "title": "Midnight Bloom", "subtitle": "Navy silk ground, crimson border", "image": "https://i.etsystatic.com/35873478/r/il/e2c616/6908103053/il_794xN.6908103053_47as.jpg", "images": ["https://i.etsystatic.com/35873478/r/il/e2c616/6908103053/il_794xN.6908103053_47as.jpg", "https://i.etsystatic.com/35873478/r/il/6a84f4/6860124308/il_794xN.6860124308_b0cx.jpg", "https://i.etsystatic.com/35873478/r/il/a2530d/6908113505/il_794xN.6908113505_72jn.jpg", "https://i.etsystatic.com/35873478/r/il/d51815/6908102287/il_794xN.6908102287_mray.jpg", "https://i.etsystatic.com/35873478/r/il/cb6d8d/6908102049/il_794xN.6908102049_h4uc.jpg", "https://i.etsystatic.com/35873478/r/il/acf257/6908103663/il_794xN.6908103663_40az.jpg"], "category": "Cappadocia Silk", "materials": "Pure Silk", "dyes": "Natural plant-root dyes", "dims": [110, 75], "shape": "Rectangle", "origin": "Nevşehir, Cappadocia · Türkiye", "price": 5640, "etsy": "https://www.etsy.com/listing/4305060382", "tags": ["Cappadocia Silk"], "photo": true, "story": "Coral, cream and pale blue flowers open around a central medallion on a deep navy ground, framed by a border of madder red."},
+  {"id": "midnight-bloom", "ref": "No. E-0382", "title": "Midnight Bloom", "subtitle": "Navy silk ground, madder-red border, Hereke-style medallion", "image": "/images/collection/midnight-bloom.jpg", "images": ["/images/collection/midnight-bloom.jpg", "/images/collection/midnight-bloom-photo-1.jpg", "/images/collection/midnight-bloom-photo-2.jpg", "/images/collection/midnight-bloom-photo-3.jpg", "/images/collection/midnight-bloom-photo-4.jpg", "https://i.etsystatic.com/35873478/r/il/e2c616/6908103053/il_794xN.6908103053_47as.jpg", "https://i.etsystatic.com/35873478/r/il/6a84f4/6860124308/il_794xN.6860124308_b0cx.jpg", "https://i.etsystatic.com/35873478/r/il/a2530d/6908113505/il_794xN.6908113505_72jn.jpg", "https://i.etsystatic.com/35873478/r/il/d51815/6908102287/il_794xN.6908102287_mray.jpg", "https://i.etsystatic.com/35873478/r/il/cb6d8d/6908102049/il_794xN.6908102049_h4uc.jpg", "https://i.etsystatic.com/35873478/r/il/acf257/6908103663/il_794xN.6908103663_40az.jpg"], "category": "Cappadocia Silk", "materials": "Pure Silk", "dyes": "Natural plant-root dyes", "dims": [110, 75], "shape": "Rectangle", "origin": "Nevşehir, Cappadocia · Türkiye", "price": 5640, "etsy": "https://www.etsy.com/listing/4305060382", "tags": ["Flagship", "Cappadocia Silk"], "photo": true, "story": "Coral, cream and pale blue flowers open around a central medallion on a deep navy ground, framed by a border of madder red.", "flagship": true, "flyer": "/images/collection/midnight-bloom-flight.jpg"},
   {"id": "madder-garden", "ref": "No. E-0434", "title": "Madder Garden", "subtitle": "Florals on a red silk field", "image": "https://i.etsystatic.com/35873478/r/il/83ad25/6859305334/il_794xN.6859305334_jfbj.jpg", "images": ["https://i.etsystatic.com/35873478/r/il/83ad25/6859305334/il_794xN.6859305334_jfbj.jpg", "https://i.etsystatic.com/35873478/r/il/f57ba3/6907284085/il_794xN.6907284085_sge1.jpg", "https://i.etsystatic.com/35873478/r/il/65212c/6859307040/il_794xN.6859307040_659e.jpg", "https://i.etsystatic.com/35873478/r/il/5082aa/6859301558/il_794xN.6859301558_7ziu.jpg", "https://i.etsystatic.com/35873478/r/il/430e2f/6907283589/il_794xN.6907283589_6ucp.jpg", "https://i.etsystatic.com/35873478/r/il/af35e7/6907284889/il_794xN.6907284889_limv.jpg"], "category": "Cappadocia Silk", "materials": "Pure Silk", "dyes": "Natural plant-root dyes", "dims": [110, 70], "shape": "Rectangle", "origin": "Nevşehir, Cappadocia · Türkiye", "price": 5063, "etsy": "https://www.etsy.com/listing/4304880434", "tags": ["Cappadocia Silk"], "photo": true, "story": "A field of madder red scattered with blue, pink, cream and green blossoms. Woven in pure Cappadocia silk with colours drawn from plant roots."},
   {"id": "turquoise-medallion", "ref": "No. E-8069", "title": "Turquoise Medallion", "subtitle": "Teal field, paisley and gold", "image": "https://i.etsystatic.com/35873478/r/il/ef6a9e/6908110597/il_794xN.6908110597_bmip.jpg", "images": ["https://i.etsystatic.com/35873478/r/il/ef6a9e/6908110597/il_794xN.6908110597_bmip.jpg", "https://i.etsystatic.com/35873478/r/il/3b7a11/6854510816/il_794xN.6854510816_f9x6.jpg", "https://i.etsystatic.com/35873478/r/il/43aca0/6854466938/il_794xN.6854466938_b7z3.jpg", "https://i.etsystatic.com/35873478/r/il/d76a11/6902452353/il_794xN.6902452353_6mvs.jpg", "https://i.etsystatic.com/35873478/r/il/582024/6902454409/il_794xN.6902454409_mnw9.jpg"], "category": "Cappadocia Silk", "materials": "Pure Silk", "dyes": "Natural plant-root dyes", "dims": [102, 66], "shape": "Rectangle", "origin": "Nevşehir, Cappadocia · Türkiye", "price": 4538, "etsy": "https://www.etsy.com/listing/4303918069", "tags": ["Cappadocia Silk"], "photo": true, "story": "A turquoise field with a central medallion, edged by a border of florals, geometry and paisley in red, gold and cream."},
   {"id": "the-hunting-garden", "ref": "No. E-1603", "title": "The Hunting Garden", "subtitle": "Deer and birds among the flowers", "image": "https://i.etsystatic.com/35873478/r/il/ac788e/6862027308/il_794xN.6862027308_kshw.jpg", "images": ["https://i.etsystatic.com/35873478/r/il/ac788e/6862027308/il_794xN.6862027308_kshw.jpg", "https://i.etsystatic.com/35873478/r/il/26f297/6856614616/il_794xN.6856614616_i6hu.jpg", "https://i.etsystatic.com/35873478/r/il/18b6eb/6904595357/il_794xN.6904595357_kqnl.jpg", "https://i.etsystatic.com/35873478/r/il/44541c/6856614754/il_794xN.6856614754_t2c8.jpg", "https://i.etsystatic.com/35873478/r/il/b877c2/6904595457/il_794xN.6904595457_q994.jpg", "https://i.etsystatic.com/35873478/r/il/52f2ac/6856627136/il_794xN.6856627136_se6l.jpg"], "category": "Cappadocia Silk", "materials": "Pure Silk", "dyes": "Natural plant-root dyes", "dims": [95, 65], "shape": "Rectangle", "origin": "Nevşehir, Cappadocia · Türkiye", "price": 4265, "etsy": "https://www.etsy.com/listing/4304331603", "tags": ["Cappadocia Silk"], "photo": true, "story": "Deer and birds move through a flowering teal garden, a theme with deep roots in Anatolian and Persian court weaving."},
@@ -282,3 +282,10 @@ window.PROFESSIO_SOULS = {
   var S = window.PROFESSIO_SOULS;
   window.PROFESSIO_PRODUCTS.forEach(function (p) { if (S[p.id]) p.soul = S[p.id]; });
 })();
+
+/* Clean URL for each piece: /rugs/<slug>/ (shared with tools/build.js). */
+window.PROFESSIO_SLUG = function (p) {
+  if (p.slug) return p.slug;
+  var t = p.title + (/silk/i.test(p.materials || "") ? " silk rug" : " rug");
+  return t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/['\u2019]/g, "").replace(/&/g, " and ").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+};

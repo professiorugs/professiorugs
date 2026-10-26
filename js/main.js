@@ -31,6 +31,8 @@
       ? "$" + Math.round(p.price).toLocaleString("en-US")
       : "Price upon request";
   }
+  var slug = window.PROFESSIO_SLUG;
+  function rugUrl(p) { return "/rugs/" + slug(p) + "/"; }
   function byId(id) { for (var i = 0; i < PRODUCTS.length; i++) if (PRODUCTS[i].id === id) return PRODUCTS[i]; return null; }
 
   /* ---------- Collection (saved pieces) ---------- */
@@ -46,9 +48,9 @@
 
   /* ---------- Layout: header, footer, drawer ---------- */
   var NAV = [
-    ["shop.html", "Collection", "shop"],
-    ["heritage.html", "Heritage & Origins", "heritage"],
-    ["story.html", "Our Story", "story"]
+    ["/rugs/", "Collection", "shop"],
+    ["/heritage/", "Heritage & Origins", "heritage"],
+    ["/our-story/", "Our Story", "story"]
   ];
   function header() {
     var left = NAV.map(function (n) {
@@ -60,18 +62,18 @@
         '<nav class="nav nav--left" aria-label="Primary">' +
           '<button class="menu-toggle" id="menuToggle" aria-label="Menu" aria-expanded="false"><span></span><span></span></button>' + left +
         "</nav>" +
-        '<a href="index.html" class="logo" aria-label="Professio, home"></a>' +
+        '<a href="/" class="logo" aria-label="Professio, home"></a>' +
         '<nav class="nav nav--right" aria-label="Account">' +
-          '<a class="hide-m" href="trade.html"' + (page === "trade" ? ' aria-current="page"' : "") + ">Trade Portal</a>" +
+          '<a class="hide-m" href="/trade/"' + (page === "trade" ? ' aria-current="page"' : "") + ">Trade Portal</a>" +
           '<button id="openDrawer" aria-label="Open your collection">Collection<span class="bag-count" id="bagCount"></span></button>' +
         "</nav>" +
       "</div>" +
       '<span class="thread-progress" id="threadProgress" aria-hidden="true"></span>' +
       "</header>" +
       '<div class="mobile-menu" id="mobileMenu">' +
-        '<a href="index.html">Home</a>' +
+        '<a href="/">Home</a>' +
         NAV.map(function (n) { return '<a href="' + n[0] + '">' + n[1] + "</a>"; }).join("") +
-        '<a href="trade.html">Trade &amp; Commissions</a>' +
+        '<a href="/trade/">Trade &amp; Commissions</a>' +
         '<p class="small">A family house of handmade rugs<br>Worldwide delivery · Trade enquiries welcome</p>' +
       "</div>";
   }
@@ -84,11 +86,11 @@
             '<p class="lede" style="max-width:420px">Private viewings, new arrivals and stories from the loom, a few times a year.</p>' +
             '<form class="newsletter" data-form="newsletter"><label class="sr-only" for="nl">Email</label><input id="nl" type="email" required placeholder="Your email address"><button type="submit">Subscribe</button></form>' +
           "</div>" +
-          '<div><h5>The House</h5><ul><li><a href="story.html">Our Story</a></li><li><a href="heritage.html">Heritage &amp; Origins</a></li><li><a href="story.html#certificate">Certificate of Authenticity</a></li></ul></div>' +
-          '<div><h5>Collection</h5><ul><li><a href="shop.html">All Pieces</a></li><li><a href="shop.html?category=Cappadocia%20Silk">Cappadocia Silk</a></li><li><a href="shop.html?category=Persian%20Miniature">Persian Miniature</a></li><li><a href="shop.html?category=Salon%20%26%20Court">Salon &amp; Court</a></li><li><a href="shop.html?category=Landscape">Landscape</a></li></ul></div>' +
-          '<div><h5>Trade</h5><ul><li><a href="trade.html">Trade Portal</a></li><li><a href="trade.html?type=commission">Custom Commissions</a></li><li><a href="trade.html?type=acquire">Private Acquisition</a></li><li><a href="mailto:info@professiorugs.com">info@professiorugs.com</a></li></ul></div>' +
+          '<div><h5>The House</h5><ul><li><a href="/our-story/">Our Story</a></li><li><a href="/heritage/">Heritage &amp; Origins</a></li><li><a href="/our-story/#certificate">Certificate of Authenticity</a></li><li><a href="/silk-rug-guide/">Silk Rug Buying Guide</a></li><li><a href="/heritage/#hereke">Hereke Silk Rugs</a></li></ul></div>' +
+          '<div><h5>Collection</h5><ul><li><a href="/rugs/">All Pieces</a></li><li><a href="/rugs/?category=Cappadocia%20Silk">Cappadocia Silk</a></li><li><a href="/rugs/?category=Persian%20Miniature">Persian Miniature</a></li><li><a href="/rugs/?category=Salon%20%26%20Court">Salon &amp; Court</a></li><li><a href="/rugs/?category=Landscape">Landscape</a></li></ul></div>' +
+          '<div><h5>Trade</h5><ul><li><a href="/trade/">Trade Portal</a></li><li><a href="/trade/?type=commission">Custom Commissions</a></li><li><a href="/trade/?type=acquire">Private Acquisition</a></li><li><a href="mailto:info@professiorugs.com">info@professiorugs.com</a></li></ul></div>' +
         "</div>" +
-        '<div class="footer-bottom"><span>© ' + new Date().getFullYear() + ' Professio. Handmade rugs, family owned.</span><span>www.professiorugs.com</span></div>' +
+        '<div class="footer-bottom"><span>© ' + new Date().getFullYear() + ' Professio. Handmade rugs, family owned.</span><span>Handmade in Nevşehir, Cappadocia · Türkiye</span></div>' +
       "</div></footer>" +
       '<div class="drawer-backdrop" id="drawerBackdrop"></div>' +
       '<aside class="drawer" id="drawer" aria-label="Your collection" aria-hidden="true">' +
@@ -104,13 +106,13 @@
     if (!body) return;
     var items = readCollection().map(byId).filter(Boolean);
     if (!items.length) {
-      body.innerHTML = '<div class="drawer-empty"><p class="lede">Your collection is empty.</p><a class="link-arrow" href="shop.html">Discover the pieces</a></div>';
+      body.innerHTML = '<div class="drawer-empty"><p class="lede">Your collection is empty.</p><a class="link-arrow" href="/rugs/">Discover the pieces</a></div>';
       foot.innerHTML = "";
       return;
     }
     body.innerHTML = items.map(function (p) {
       return '<div class="drawer-item">' +
-        '<a class="thumb" href="product.html?id=' + p.id + '"><img src="' + p.image + '" alt="" referrerpolicy="no-referrer"></a>' +
+        '<a class="thumb" href="' + rugUrl(p) + '"><img src="' + p.image + '" alt="" referrerpolicy="no-referrer"></a>' +
         '<div><h4>' + esc(p.title) + '</h4><div class="small">' + esc(p.ref) + (p.dims ? " · " + dimsText(p) : "") + '</div><button data-remove="' + p.id + '">Remove</button></div>' +
         '<div class="price">' + (typeof p.price === "number" ? priceText(p) : "") + "</div>" +
       "</div>";
@@ -120,7 +122,7 @@
         (items.every(function (p) { return typeof p.price === "number"; })
           ? "<span>$" + Math.round(items.reduce(function (t, p) { return t + p.price; }, 0)).toLocaleString("en-US") + "</span>"
           : '<span class="on-request">Price upon request</span>') + "</div>" +
-      '<a class="btn btn--solid btn--block" href="trade.html?type=acquire&pieces=' + encodeURIComponent(items.map(function (p) { return p.id; }).join(",")) + '">Request Private Acquisition</a>' +
+      '<a class="btn btn--solid btn--block" href="/trade/?type=acquire&pieces=' + encodeURIComponent(items.map(function (p) { return p.id; }).join(",")) + '">Request Private Acquisition</a>' +
       '<p class="small" style="margin:0;text-align:center">A member of the family will reply within one business day with pricing, provenance and delivery.</p>';
     $$("[data-remove]", body).forEach(function (b) {
       b.addEventListener("click", function () { removeFromCollection(b.getAttribute("data-remove")); });
@@ -175,6 +177,7 @@
   }
 
   /* ---------- Cards ---------- */
+  function altText(p) { return p.title + ", handmade " + (p.materials ? p.materials.toLowerCase() + " " : "") + "rug" + (p.dims ? ", " + dimsText(p) : ""); }
   function card(p) {
     var flag = p.tags && p.tags[0] ? '<span class="card-flag">' + esc(p.tags[0]) + "</span>" : "";
     var meta = [p.materials, p.dims ? dimsText(p) : null].filter(Boolean).join(" · ") || "Specifications on request";
@@ -183,8 +186,8 @@
     var teaser = lead ? '<span class="card-soul">' + esc(p.soul.split(/(?<=[.!?])\s/)[0]) + "</span>" : "";
     var remote = /^https?:/.test(p.image);
     var price = typeof p.price === "number" ? '<span class="price">' + priceText(p) + "</span>" : '<span class="price on-request">On request</span>';
-    return '<a class="card reveal" href="product.html?id=' + p.id + '">' +
-      '<div class="card-media' + silk + '">' + flag + '<img class="' + (remote ? "photo" : "art") + '" src="' + p.image + '" alt="' + esc(p.title) + '" loading="lazy" referrerpolicy="no-referrer"></div>' +
+    return '<a class="card reveal" href="' + rugUrl(p) + '">' +
+      '<div class="card-media' + silk + '">' + flag + '<img class="' + (remote ? "photo" : "art") + '" src="' + p.image + '" alt="' + esc(altText(p)) + '" loading="lazy" decoding="async" referrerpolicy="no-referrer"></div>' +
       '<div class="card-body"><h3 class="card-title">' + esc(p.title) + "</h3>" + price +
       '<span class="card-meta">' + esc(meta) + "</span>" + teaser + "</div></a>";
   }
@@ -290,17 +293,17 @@
   var MATERIALS = {
     wool: {
       name: "Highland Wool", origin: "Anatolian & Persian plateaus",
-      img: "images/editorial/artisan-reach.jpg", focus: "50% 20%",
+      img: "/images/editorial/artisan-reach.jpg", focus: "50% 20%",
       text: "Spring-shorn from sheep grazing above a thousand metres, where cold nights grow a long, lanolin-rich fibre. Hand-spun, it takes dye deeply and wears for generations, softening with every year underfoot."
     },
     silk: {
       name: "Pure Silk", origin: "Hand-reeled filament",
-      img: "images/editorial/artisan-rolls.jpg", focus: "60% 40%",
+      img: "/images/editorial/artisan-rolls.jpg", focus: "60% 40%",
       text: "The finest thread a weaver can hold. Silk allows knots so small that a face, a petal or a fold of satin can be drawn with a painter's precision, and it carries a lustre that changes as you move around the piece."
     },
     dye: {
       name: "The Dyer's Palette", origin: "Colour graded by hand",
-      img: "images/editorial/artisan-lean.jpg", focus: "70% 40%",
+      img: "/images/editorial/artisan-lean.jpg", focus: "70% 40%",
       text: "Pictorial work demands hundreds of shades, each matched by eye in small dye lots. Madder reds, indigo blues and saffron golds sit alongside gradations so fine they read as brushstrokes."
     }
   };
@@ -309,9 +312,8 @@
   }
   function initProduct() {
     var root = $("#pdp"); if (!root) return;
-    var id = new URLSearchParams(location.search).get("id");
+    var id = document.body.getAttribute("data-id") || new URLSearchParams(location.search).get("id");
     var p = byId(id) || PRODUCTS[0];
-    document.title = p.title + " · Professio";
     $("#crumbTitle").textContent = p.title;
 
     var unit = "cm";
@@ -335,11 +337,11 @@
         '<div class="pdp-actions">' +
           (p.etsy
             ? '<a class="btn btn--solid" href="' + p.etsy + '" target="_blank" rel="noopener">Acquire Piece</a>'
-            : '<a class="btn btn--solid" href="trade.html?type=acquire&pieces=' + p.id + '">Acquire Piece</a>') +
+            : '<a class="btn btn--solid" href="/trade/?type=acquire&pieces=' + p.id + '">Acquire Piece</a>') +
           '<button class="btn" id="addBtn">Add to Collection</button>' +
-          '<a class="link-arrow" style="justify-self:start;margin-top:10px" href="trade.html?type=trade&pieces=' + p.id + '">Inquire for Trade</a>' +
+          '<a class="link-arrow" style="justify-self:start;margin-top:10px" href="/trade/?type=trade&pieces=' + p.id + '">Inquire for Trade</a>' +
         "</div>" +
-        (p.etsy ? '<p class="small" style="margin-top:-4px">Secure checkout through the Professio atelier on Etsy. Prefer to buy directly? <a href="trade.html?type=acquire&pieces=' + p.id + '" style="text-decoration:underline">Request a private acquisition</a>.</p>' : "") +
+        (p.etsy ? '<p class="small" style="margin-top:-4px">Secure checkout through the Professio atelier on Etsy. Prefer to buy directly? <a href="/trade/?type=acquire&pieces=' + p.id + '" style="text-decoration:underline">Request a private acquisition</a>.</p>' : "") +
         '<div class="placard">' +
           '<div class="placard-head"><span class="serif">' + esc(p.title) + '</span><span class="inv">' + esc(p.ref) + "</span></div>" +
           "<dl>" +
@@ -356,7 +358,7 @@
           acc("The Piece", "<p>" + esc(p.story) + "</p>", true) +
           acc("Certificate of Authenticity", "<p>Every Professio rug is accompanied by a signed certificate affirming that it is handmade, issued in the name of its new custodian.</p>") +
           acc("Care & Display", "<p>Hang or lay away from direct sunlight. Vacuum gently without a beater bar, rotate yearly, and entrust deep cleaning only to a specialist in hand-knotted textiles. Framed pieces are supplied ready to hang.</p>") +
-          acc("Delivery & Trade", "<p>Insured worldwide delivery, rolled or framed. Interior designers, galleries and hospitality buyers receive trade terms through our <a href=\"trade.html\" style=\"text-decoration:underline\">Trade Portal</a>.</p>") +
+          acc("Delivery & Trade", "<p>Insured worldwide delivery, rolled or framed. Interior designers, galleries and hospitality buyers receive trade terms through our <a href=\"/trade/\" style=\"text-decoration:underline\">Trade Portal</a>.</p>") +
         "</div>" +
         '<div class="pdp-assure"><span>Certified handmade, signed by the family</span><span>Insured worldwide delivery</span><span>Private viewing by video on request</span></div>';
 
@@ -387,7 +389,7 @@
     var gallery = [p.image].concat((p.images || []).filter(function (u) { return u !== p.image; }));
     function show(src) {
       main.classList.remove("zoomed");
-      main.innerHTML = '<img class="art' + (/^https?:/.test(src) ? " is-photo" : "") + '" src="' + src + '" alt="' + esc(p.title) + ', handmade rug" referrerpolicy="no-referrer">';
+      main.innerHTML = '<img class="art' + (/^https?:|-photo-/.test(src) ? " is-photo" : "") + '" src="' + src + '" alt="' + esc(altText(p)) + '" referrerpolicy="no-referrer">';
     }
     show(gallery[0]);
     if (gallery.length > 1) {
@@ -486,7 +488,7 @@
     var stage = $(".zoomer-stage", z), level = $(".zoomer-level", z);
     var scale = 1, tx = 0, ty = 0, MAX = 8;
     var maps = {
-      pile: '<img src="images/heritage/knot-map.jpg" alt="Pile face of a silk pictorial rug, each knot visible" style="width:100%;height:100%;object-fit:cover" draggable="false">',
+      pile: '<img src="/images/heritage/knot-map.jpg" alt="Pile face of a silk pictorial rug, each knot visible" style="width:100%;height:100%;object-fit:cover" draggable="false">',
       sym: knotDiagram("sym"),
       asym: knotDiagram("asym")
     };
@@ -666,15 +668,25 @@
     canvas.width = W * dpr; canvas.height = H * dpr; canvas.style.width = W + "px"; canvas.style.height = H + "px";
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
+    var start = performance.now(), poofAt = null, ready = false;
+    var AUTO = 6000; // the wordmark waits about five seconds for a click, then lets the visitor in
     function finish(fast) {
       if (done) return; done = true;
       cover.classList.add(fast ? "is-leaving-fast" : "is-leaving");
       root.classList.remove("intro-active");
-      setTimeout(function () { cancelAnimationFrame(raf); cover.remove(); }, fast ? 450 : 1300);
+      setTimeout(function () { cancelAnimationFrame(raf); cover.remove(); }, fast ? 450 : 2300);
     }
-    cover.addEventListener("click", function () { finish(true); });
-    document.addEventListener("keydown", function () { finish(true); }, { once: true });
-    setTimeout(function () { finish(false); }, 5500); // safety net
+    function enter() {
+      if (!ready) { finish(true); return; }      // image not loaded yet: just open the site
+      if (poofAt == null) { poofAt = performance.now() - start; cover.classList.add("is-poof"); }
+      else finish(true);                         // a second click skips the rest
+    }
+    cover.addEventListener("click", enter);
+    document.addEventListener("keydown", function onKey(e) {
+      if (done) { document.removeEventListener("keydown", onKey); return; }
+      if (e.key === "Escape") finish(true); else enter();
+    });
+    setTimeout(function () { finish(false); }, 12000); // safety net
 
     // soft glowing sprites for the dust
     function sprite(inner, mid) {
@@ -707,7 +719,7 @@
       glow.width = mark.width + pad * 2 * dpr; glow.height = mark.height + pad * 2 * dpr;
       gg.shadowColor = "rgba(236,190,112,.85)"; gg.shadowBlur = lh * 0.35 * dpr;
       gg.drawImage(mark, pad * dpr, pad * dpr); gg.drawImage(mark, pad * dpr, pad * dpr);
-      // working layers for the shine sweep and the dissolve
+      // working layer for the shine sweep and the dissolve
       var work = document.createElement("canvas"), wc = work.getContext("2d");
       work.width = mark.width; work.height = mark.height;
 
@@ -716,7 +728,7 @@
       if (data) for (var y = 0; y < probe.height; y += 1) for (var x = 0; x < probe.width; x += 1)
         if (data[(y * probe.width + x) * 4 + 3] > 120) pts.push(x, y);
       var target = mobile ? 1500 : 3400, n = pts.length / 2, parts = [];
-      var sc = lw / 940, SPAN = 0.42; // dissolve sweeps left to right over SPAN seconds
+      var sc = lw / 940, SPAN = 0.6; // dissolve sweeps left to right over SPAN seconds
       for (var i = 0; i < Math.min(target, n); i++) {
         var j = i + Math.floor(Math.random() * (n - i)), px = pts[j * 2], py = pts[j * 2 + 1];
         pts[j * 2] = pts[i * 2]; pts[j * 2 + 1] = pts[i * 2 + 1];
@@ -724,41 +736,46 @@
         var big = Math.random() < 0.07;
         parts.push({
           x: lx + px, y: ly + py,
-          vx: (80 + Math.random() * 300 + nx * 170) * sc, vy: (-(40 + Math.random() * 240) + ny * 120) * sc,
-          d: fx * SPAN + Math.random() * 0.06, life: 0.9 + Math.random() * 0.9,
+          vx: (60 + Math.random() * 240 + nx * 140) * sc, vy: (-(30 + Math.random() * 200) + ny * 100) * sc,
+          d: fx * SPAN + Math.random() * 0.08, life: 1.5 + Math.random() * 1.2,
           r: big ? 4 + Math.random() * 4 : 1.6 + Math.random() * 2.2, spr: big || Math.random() < 0.45 ? GOLD : CREAM,
-          tw: 6 + Math.random() * 14, ph: Math.random() * 6.3, w: 1 + Math.random() * 3
+          tw: 5 + Math.random() * 12, ph: Math.random() * 6.3, w: 0.8 + Math.random() * 2.4
         });
       }
       var sparks = [];
+      ready = true;
 
-      var start = performance.now();
-      var IN = 900, SHINE = 1000, SHINE_LEN = 900, POOF = 2000, LEAVE = 2750;
+      var IN = 900, SHINE = 1000, SHINE_LEN = 900, CYCLE = 2700;
       function ease(u) { return u < 0 ? 0 : u > 1 ? 1 : 1 - Math.pow(1 - u, 3); }
 
       function frame(now) {
         if (done && cover.classList.contains("is-leaving-fast")) return;
         var t = now - start;
+        if (poofAt == null && t >= AUTO) { poofAt = t; cover.classList.add("is-poof"); }
         ctx.clearRect(0, 0, W, H);
         ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1;
 
-        var shineU = (t - SHINE) / SHINE_LEN;            // 0..1 while the light passes
-        var poofS = (t - POOF) / 1000;                   // seconds since the poof
-        var glowA = t < SHINE ? 0 : t < POOF ? ease(shineU) * 0.75 : Math.max(0, 0.75 + 0.25 * (1 - poofS * 4)) * Math.max(0, 1 - poofS * 2.2);
+        var poofS = poofAt == null ? -1 : (t - poofAt) / 1000;   // seconds since the poof
+        var cyc = t - SHINE, first = cyc < CYCLE;
+        var shineU = poofS >= 0 || cyc < 0 ? -1 : (cyc % CYCLE) / SHINE_LEN; // 0..1 while a light passes
+        var glowA;
+        if (t < SHINE) glowA = 0;
+        else if (poofS < 0) glowA = cyc < SHINE_LEN ? ease(cyc / SHINE_LEN) * 0.75 : 0.62 + 0.13 * Math.cos((cyc - SHINE_LEN) / 650);
+        else glowA = (0.75 + 0.35 * Math.max(0, 1 - poofS * 4)) * Math.max(0, 1 - poofS * 1.4);
 
         // the wordmark, rising out of the dark
         var a = ease(t / IN), s = 0.965 + 0.035 * a;
         var dw = lw * s, dh = lh * s, dx = cx - dw / 2, dy = cy - dh / 2;
         if (glowA > 0) {
-          ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = glowA;
+          ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = glowA * a;
           ctx.drawImage(glow, dx - pad * s, dy - pad * s, dw + pad * 2 * s, dh + pad * 2 * s);
           ctx.globalCompositeOperation = "source-over";
         }
-        if (poofS < SPAN + 0.12) {
+        if (poofS < SPAN + 0.2) {
           wc.globalCompositeOperation = "source-over"; wc.clearRect(0, 0, work.width, work.height);
           wc.drawImage(mark, 0, 0);
           if (poofS > 0) { // dissolve front
-            var fx2 = (poofS / SPAN) * work.width * 1.12, edge = work.width * 0.12;
+            var fx2 = (poofS / SPAN) * work.width * 1.15, edge = work.width * 0.15;
             var gr = wc.createLinearGradient(fx2 - edge, 0, fx2, 0);
             gr.addColorStop(0, "rgba(0,0,0,1)"); gr.addColorStop(1, "rgba(0,0,0,0)");
             wc.globalCompositeOperation = "destination-out"; wc.fillStyle = gr; wc.fillRect(0, 0, work.width, work.height);
@@ -772,20 +789,20 @@
             sg.addColorStop(0, "rgba(255,214,140,0)"); sg.addColorStop(0.45, "rgba(255,226,165,.85)");
             sg.addColorStop(0.5, "rgba(255,250,235,1)"); sg.addColorStop(0.55, "rgba(255,226,165,.85)"); sg.addColorStop(1, "rgba(255,214,140,0)");
             wc.globalCompositeOperation = "source-in"; wc.fillStyle = sg; wc.fillRect(0, 0, work.width, work.height);
-            ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = 1;
+            ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = first ? 1 : 0.55;
             ctx.drawImage(work, dx, dy, dw, dh);
             // a few twinkles riding the light
-            if (n && Math.random() < 0.7) {
+            if (n && Math.random() < (first ? 0.7 : 0.35)) {
               var k = Math.floor(Math.random() * n), sx = pts[k * 2], bandX = bx / dpr;
               if (Math.abs(sx - bandX) < bw / dpr) sparks.push({ x: lx + sx, y: ly + pts[k * 2 + 1], b: t, r: 3 + Math.random() * 4 });
             }
           }
         }
 
-        // twinkles and the final glint
+        // twinkles and the glint at the end of the first light
         ctx.globalCompositeOperation = "lighter";
         for (var q = sparks.length - 1; q >= 0; q--) {
-          var sp = sparks[q], u = (t - sp.b) / 520;
+          var sp = sparks[q], u = (t - sp.b) / 560;
           if (u >= 1) { sparks.splice(q, 1); continue; }
           var e = Math.sin(u * Math.PI), r = sp.r * e;
           ctx.globalAlpha = e;
@@ -794,8 +811,8 @@
           ctx.drawImage(GOLD, sp.x - r * 3, sp.y - 0.8, r * 6, 1.6);
           ctx.drawImage(GOLD, sp.x - 0.8, sp.y - r * 3, 1.6, r * 6);
         }
-        var gU = (t - (POOF - 260)) / 420; // star glint at the end of the shine
-        if (gU > 0 && gU < 1) {
+        var gU = (t - (SHINE + SHINE_LEN - 160)) / 520;
+        if (gU > 0 && gU < 1 && (poofS < 0 || poofS < 0.1)) {
           var ge = Math.sin(gU * Math.PI), gx = lx + lw * 0.985, gy = ly + lh * 0.12, gl = lh * 0.55 * ge;
           ctx.globalAlpha = ge;
           ctx.drawImage(GOLD, gx - gl * 0.35, gy - gl * 0.35, gl * 0.7, gl * 0.7);
@@ -805,7 +822,7 @@
 
         // poof: a soft bloom and the glowing dust
         if (poofS > 0) {
-          var bl = Math.max(0, 1 - poofS / 0.7);
+          var bl = Math.max(0, 1 - poofS / 0.9);
           if (bl > 0) {
             var rg = ctx.createRadialGradient(cx, cy, 0, cx, cy, lw * 0.6);
             rg.addColorStop(0, "rgba(240,196,128," + (0.22 * bl * bl) + ")"); rg.addColorStop(1, "rgba(240,196,128,0)");
@@ -818,19 +835,19 @@
             if (ls <= 0) continue;
             var pu = ls / p.life;
             if (pu >= 1) continue;
-            var f = (1 - Math.exp(-ls * 2.4)) / 2.4;
-            var X = p.x + p.vx * f + Math.sin(ls * p.w + p.ph) * 8 * ls;
-            var Y = p.y + p.vy * f - 26 * ls * ls;
-            var al = Math.pow(1 - pu, 1.6) * (0.7 + 0.3 * Math.sin(ls * p.tw + p.ph));
-            var rr = p.r * (0.8 + pu * 1.3) * (ls < 0.08 ? 1.6 - ls * 7.5 : 1);
+            var f = (1 - Math.exp(-ls * 1.8)) / 1.8;
+            var X = p.x + p.vx * f + Math.sin(ls * p.w + p.ph) * 9 * ls;
+            var Y = p.y + p.vy * f - 18 * ls * ls;
+            var al = Math.pow(1 - pu, 1.4) * (0.7 + 0.3 * Math.sin(ls * p.tw + p.ph));
+            var rr = p.r * (0.8 + pu * 1.4) * (ls < 0.1 ? 1.6 - ls * 6 : 1);
             ctx.globalAlpha = al;
             ctx.drawImage(p.spr, X - rr, Y - rr, rr * 2, rr * 2);
           }
+          if (poofS > 1.0) finish(false);   // the dark lifts slowly while the dust drifts on
         }
         ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
 
-        if (t > LEAVE) finish(false);
-        if (poofS > 2.4) return;
+        if (poofS > 3.4) return;
         raf = requestAnimationFrame(frame);
       }
       raf = requestAnimationFrame(frame);
@@ -847,9 +864,10 @@
     for (var m = 0; m < 14; m++) {
       motes += '<b style="left:' + (8 + Math.random() * 84).toFixed(1) + "%;--t:" + (6 + Math.random() * 6).toFixed(1) + "s;--dl:" + (-Math.random() * 12).toFixed(1) + "s;--s:" + (2 + Math.random() * 3).toFixed(1) + 'px"></b>';
     }
-    return '<div class="flyer" role="img" aria-label="' + esc(p.title) + ', floating in the air">' +
+    var ratio = p.dims ? Math.max(p.dims[0], p.dims[1]) / Math.min(p.dims[0], p.dims[1]) : 829 / 565;
+    return '<div class="flyer" role="img" aria-label="' + esc(p.title) + ', a handmade silk rug floating in the air" style="aspect-ratio:' + ratio.toFixed(3) + '">' +
       '<div class="flyer-aura"></div>' +
-      '<div class="flyer-float"><div class="flyer-tilt"><div class="flyer-rug" style="--img:url(\'' + new URL(p.image, location.href).href + '\')">' + strips + "</div></div></div>" +
+      '<div class="flyer-float"><div class="flyer-tilt"><div class="flyer-rug" style="--img:url(\'' + new URL(p.flyer || p.image, location.href).href + '\')">' + strips + "</div></div></div>" +
       '<div class="flyer-shadow"></div><div class="flyer-motes" aria-hidden="true">' + motes + "</div></div>";
   }
   function watchFlyer(el) {
@@ -861,7 +879,7 @@
   function initFlagship() {
     $$("[data-flagship]").forEach(function (el) {
       var p = byId(el.getAttribute("data-flagship")); if (!p) return;
-      var href = "product.html?id=" + encodeURIComponent(p.id);
+      var href = rugUrl(p);
       var teaser = (p.soul || p.story || "").split(/(?<=[.!?])\s/).slice(0, 2).join(" ");
       el.innerHTML =
         '<div class="flagship-glow" aria-hidden="true"></div>' +
@@ -884,6 +902,10 @@
   }
 
   /* ---------- Boot ---------- */
+  // keep the address bar clean: /rugs/ rather than /rugs/index.html
+  if (/\/index\.html$/.test(location.pathname) && history.replaceState) {
+    history.replaceState(null, "", location.pathname.replace(/index\.html$/, "") + location.search + location.hash);
+  }
   initIntro();
   initHeroSlides();
   initRidge();
