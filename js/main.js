@@ -86,7 +86,6 @@
           '<div><h5>Collection</h5><ul><li><a href="shop.html">All Pieces</a></li><li><a href="shop.html?category=Cappadocia%20Silk">Cappadocia Silk</a></li><li><a href="shop.html?category=Persian%20Miniature">Persian Miniature</a></li><li><a href="shop.html?category=Salon%20%26%20Court">Salon &amp; Court</a></li><li><a href="shop.html?category=Landscape">Landscape</a></li></ul></div>' +
           '<div><h5>Trade</h5><ul><li><a href="trade.html">Trade Portal</a></li><li><a href="trade.html?type=commission">Custom Commissions</a></li><li><a href="trade.html?type=acquire">Private Acquisition</a></li><li><a href="mailto:info@professiorugs.com">info@professiorugs.com</a></li></ul></div>' +
         "</div>" +
-        '<div class="footer-logo" role="img" aria-label="Professio"></div>' +
         '<div class="footer-bottom"><span>© ' + new Date().getFullYear() + ' Professio. Handmade rugs, family owned.</span><span>www.professiorugs.com</span></div>' +
       "</div></footer>" +
       '<div class="drawer-backdrop" id="drawerBackdrop"></div>' +

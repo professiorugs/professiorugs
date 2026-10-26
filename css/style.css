@@ -580,7 +580,7 @@ fieldset.field { border: 0; padding: 0; margin: 0; }
 .newsletter input { flex: 1; background: transparent; border: 0; font: inherit; padding: 12px 0; color: var(--espresso); min-width: 0; }
 .newsletter input:focus { outline: none; }
 .newsletter button { font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase; }
-.footer-bottom { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-top: 80px; padding-top: 26px; border-top: var(--rule); font-size: 0.74rem; color: var(--muted); letter-spacing: 0.06em; }
+.footer-bottom { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-top: 64px; padding-top: 26px; border-top: var(--rule); font-size: 0.74rem; color: var(--muted); letter-spacing: 0.06em; }
 .footer-logo { width: 100%; aspect-ratio: 799 / 193; margin-top: 80px; background-color: var(--tan-deep);
   -webkit-mask: url(../images/brand/wordmark.png) center / contain no-repeat; mask: url(../images/brand/wordmark.png) center / contain no-repeat; }
 @media (max-width: 900px) { .footer-top { grid-template-columns: 1fr 1fr; } .footer-top > :first-child { grid-column: 1 / -1; } }
@@ -637,3 +637,24 @@ fieldset.field { border: 0; padding: 0; margin: 0; }
 .pdp-main img.art.is-photo { max-width: 100%; max-height: 100%; box-shadow: none; }
 .pdp-thumbs { grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); }
 .card-media .card-flag { z-index: 2; background: rgba(250, 246, 239, .9); padding: 4px 8px; }
+
+/* Hereke chapter */
+.hereke-facts { display: grid; grid-template-columns: repeat(4, 1fr); border-top: var(--rule); border-bottom: var(--rule); }
+.hereke-facts > div { padding: 34px 28px 30px 0; display: grid; gap: 10px; align-content: start; }
+.hereke-facts > div + div { padding-left: 28px; border-left: var(--rule); }
+.hk-num { font-family: var(--serif); font-size: clamp(1.9rem, 3vw, 2.8rem); font-weight: 300; line-height: 1; color: var(--bronze); }
+.hk-label { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+@media (max-width: 900px) {
+  .hereke-facts { grid-template-columns: 1fr 1fr; }
+  .hereke-facts > div:nth-child(3) { padding-left: 0; border-left: 0; }
+  .hereke-facts > div:nth-child(n+3) { border-top: var(--rule); }
+}
+
+/* Business card */
+.biz-card { margin-top: 40px; perspective: 1200px; }
+.biz-card img { width: 100%; max-width: 420px; height: auto; display: block; border-radius: 4px;
+  box-shadow: 0 40px 60px -36px rgba(30, 22, 18, .65), 0 2px 6px rgba(30, 22, 18, .2);
+  transform: rotate(-2deg); transition: transform .8s var(--ease); }
+.biz-card:hover img { transform: rotate(0deg) translateY(-4px); }
+.biz-card figcaption { margin-top: 22px; font-size: 0.82rem; color: var(--muted); }
+.biz-card figcaption strong { font-family: var(--serif); font-weight: 400; font-size: 1.15rem; color: var(--espresso); display: block; }
