@@ -119,11 +119,14 @@ function head(o) {
 const setHead = (html, h) => html.replace(/<head>[\s\S]*?<\/head>/, h);
 
 /* ---------- Product cards (same markup as card() in js/main.js) ---------- */
-// Etsy serves each photo at 794 px and 1588 px wide: home-page cards take the sharper one on high-density
-// screens, and fall back to 794 px if a larger copy is missing.
+// Etsy serves each photo at 794 px and 1588 px wide: home-page cards and rug pages take the sharper one on
+// high-density screens, and fall back to 794 px if a larger copy is missing.
+function sharpSet(src) {
+  if (!/etsystatic\.com\/.*il_794xN/.test(src)) return "";
+  return ' srcset="' + src + " 1x, " + src.replace("il_794xN", "il_1588xN") + ' 2x" onerror="this.onerror=null;this.removeAttribute(\'srcset\')"';
+}
 function cardImg(p, cls, sharp) {
-  const hi = sharp && /etsystatic\.com\/.*il_794xN/.test(p.image) ? p.image.replace("il_794xN", "il_1588xN") : "";
-  return '<img class="' + cls + '" src="' + p.image + '"' + (hi ? ' srcset="' + p.image + " 1x, " + hi + ' 2x" onerror="this.onerror=null;this.removeAttribute(\'srcset\')"' : "") +
+  return '<img class="' + cls + '" src="' + p.image + '"' + (sharp ? sharpSet(p.image) : "") +
     ' alt="' + esc(altText(p)) + '" loading="lazy" decoding="async" referrerpolicy="no-referrer">';
 }
 function card(p, sharp) {
@@ -264,7 +267,7 @@ for (const p of PRODUCTS) {
     ogTitle: p.title + " · Handmade " + kind(p) + " · Professio",
     image: { url: abs(p.image), alt: altText(p) },
     extraMeta: typeof p.price === "number" ? ['<meta property="product:price:amount" content="' + Math.round(p.price) + '">', '<meta property="product:price:currency" content="USD">', '<meta property="product:availability" content="in stock">', '<meta property="product:brand" content="Professio">'] : [],
-    preload: ['<link rel="preload" as="image" href="' + esc(p.image) + '" fetchpriority="high">'], unroll: true,
+    preload: ['<link rel="preload" as="image" href="' + esc(p.image) + '"' + (sharpSet(p.image) ? ' imagesrcset="' + esc(p.image) + " 1x, " + esc(p.image.replace("il_794xN", "il_1588xN")) + ' 2x"' : "") + ' fetchpriority="high">'], unroll: true,
     jsonld: graph(node, crumbs([["Professio", "/"], ["Rugs", "/rugs/"], [p.title, url]]))
   };
 
@@ -283,7 +286,7 @@ for (const p of PRODUCTS) {
     .replace('<body data-page="product">', '<body data-page="product" data-id="' + esc(p.id) + '">')
     .replace('<span id="crumbTitle"></span>', '<span id="crumbTitle">' + esc(p.title) + "</span>")
     .replace('<div class="pdp-main" id="pdpMain" title="Click to examine closely"></div>',
-      '<div class="pdp-main" id="pdpMain" title="Click to examine closely"><img class="art' + (/^https?:|-photo-/.test(p.image) ? " is-photo" : "") + '" src="' + esc(p.image) + '" alt="' + esc(altText(p)) + '" fetchpriority="high" referrerpolicy="no-referrer"></div>')
+      '<div class="pdp-main" id="pdpMain" title="Click to examine closely"><img class="art' + (/^https?:|-photo-/.test(p.image) ? " is-photo" : "") + '" src="' + esc(p.image) + '"' + sharpSet(p.image) + ' alt="' + esc(altText(p)) + '" fetchpriority="high" referrerpolicy="no-referrer"></div>')
     .replace('<div class="pdp-info" id="pdpInfo"></div>', '<div class="pdp-info" id="pdpInfo">' + info + "</div>")
     .replace('<section class="soul" id="soulSection" hidden>', p.soul ? '<section class="soul" id="soulSection">' : '<section class="soul" id="soulSection" hidden>')
     .replace('<p class="soul-text" id="soulText"></p>', '<p class="soul-text" id="soulText">' + esc(p.soul || "") + "</p>");

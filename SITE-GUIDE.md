@@ -80,7 +80,9 @@ The share image (`images/brand/og-image.jpg`) and the square logo are rendered f
 
 The artisan photographs in `images/editorial/` are enlarged 1.5 times from the originals with a light clean-up of compression speckle and a gentle detail sharpen (pixel-level only, no generative model, so the people in them are unchanged). Do the same to any new editorial photo that fills the screen.
 
-On the home page, product cards with Etsy photos ask Etsy for the 1588 px copy on high-density screens and the 794 px copy elsewhere; if Etsy has no 1588 px copy, the card falls back to 794 px by itself (`cardImg` in `tools/build.js` and `js/main.js`).
+On the home page and every rug page, Etsy photos ask Etsy for the 1588 px copy on high-density screens and the 794 px copy elsewhere; if Etsy has no 1588 px copy, the photo falls back to 794 px by itself (`sharpSet` in `tools/build.js` and `js/main.js`).
+
+The house's own rug photos in `images/collection/` are enhanced the same way: the Tabriz wall carpets are cut again from the lossless catalogue pages and enlarged 2 times, and the Midnight Bloom photos are exported at 1400 px from the 1588 px originals. Each has a 320 px copy in `images/collection/thumbs/` for the gallery strip and the Your Collection drawer. When you add a photo, add its thumb too (if one is missing, the full photo is used).
 
 ## Local preview
 ```

@@ -128,7 +128,7 @@
     }
     body.innerHTML = items.map(function (p) {
       return '<div class="drawer-item">' +
-        '<a class="thumb" href="' + rugUrl(p) + '"><img src="' + p.image + '" alt="" referrerpolicy="no-referrer"></a>' +
+        '<a class="thumb" href="' + rugUrl(p) + '">' + thumbImg(p.image) + ' alt="" referrerpolicy="no-referrer"></a>' +
         '<div><h4>' + esc(p.title) + '</h4><div class="small">' + esc(p.ref) + (p.dims ? " · " + dimsText(p) : "") + '</div><button data-remove="' + p.id + '">Remove</button></div>' +
         '<div class="price">' + (typeof p.price === "number" ? priceText(p) : "") + "</div>" +
       "</div>";
@@ -239,10 +239,18 @@
 
   /* ---------- Cards ---------- */
   function altText(p) { return p.title + ", handmade " + kindText(p) + (p.type === "Wall carpet" && p.materials ? " in " + p.materials.toLowerCase() : "") + (p.dims ? ", " + dimsText(p) : ""); }
-  // same as cardImg() in tools/build.js: the 1588 px Etsy photo on high-density screens, 794 px if it is missing
+  // same as sharpSet() in tools/build.js: the 1588 px Etsy photo on high-density screens, 794 px if it is missing
+  function sharpSet(src) {
+    if (!/etsystatic\.com\/.*il_794xN/.test(src)) return "";
+    return ' srcset="' + src + " 1x, " + src.replace("il_794xN", "il_1588xN") + ' 2x" onerror="this.onerror=null;this.removeAttribute(\'srcset\')"';
+  }
+  // small copies of the house's own photos for thumbnails (images/collection/thumbs/), full size if one is missing
+  function thumbImg(src) {
+    var m = /^\/images\/collection\/([^/]+\.jpg)$/.exec(src);
+    return m ? '<img src="/images/collection/thumbs/' + m[1] + '" onerror="this.onerror=null;this.src=\'' + src + '\'"' : '<img src="' + src + '"';
+  }
   function cardImg(p, cls, sharp) {
-    var hi = sharp && /etsystatic\.com\/.*il_794xN/.test(p.image) ? p.image.replace("il_794xN", "il_1588xN") : "";
-    return '<img class="' + cls + '" src="' + p.image + '"' + (hi ? ' srcset="' + p.image + " 1x, " + hi + ' 2x" onerror="this.onerror=null;this.removeAttribute(\'srcset\')"' : "") +
+    return '<img class="' + cls + '" src="' + p.image + '"' + (sharp ? sharpSet(p.image) : "") +
       ' alt="' + esc(altText(p)) + '" loading="lazy" decoding="async" referrerpolicy="no-referrer">';
   }
   function card(p, sharp) {
@@ -460,7 +468,7 @@
     var gallery = [p.image].concat((p.images || []).filter(function (u) { return u !== p.image; }));
     function show(src) {
       main.classList.remove("zoomed");
-      main.innerHTML = '<img class="art' + (/^https?:|-photo-/.test(src) ? " is-photo" : "") + '" src="' + src + '" alt="' + esc(altText(p)) + '" referrerpolicy="no-referrer">';
+      main.innerHTML = '<img class="art' + (/^https?:|-photo-/.test(src) ? " is-photo" : "") + '" src="' + src + '"' + sharpSet(src) + ' alt="' + esc(altText(p)) + '" referrerpolicy="no-referrer">';
     }
     // The rug unrolls from the top when the page opens. The page head hides the
     // photo ("unroll-pending") until it has loaded, so it never flashes first.
@@ -491,7 +499,7 @@
     if (gallery.length > 1) {
       var th = document.createElement("div"); th.className = "pdp-thumbs";
       th.innerHTML = gallery.slice(0, 8).map(function (src, i) {
-        return '<button aria-label="View image ' + (i + 1) + '" aria-pressed="' + (i === 0) + '" data-src="' + src + '"><img src="' + src + '" alt="" loading="lazy" referrerpolicy="no-referrer"></button>';
+        return '<button aria-label="View image ' + (i + 1) + '" aria-pressed="' + (i === 0) + '" data-src="' + src + '">' + thumbImg(src) + ' alt="" loading="lazy" decoding="async" fetchpriority="low" referrerpolicy="no-referrer"></button>';
       }).join("");
       main.parentNode.insertBefore(th, main.nextSibling);
       $$("button", th).forEach(function (b) {
