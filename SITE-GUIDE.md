@@ -78,7 +78,9 @@ Product images are in `images/collection/`. Etsy pieces load their photos from E
 
 The share image (`images/brand/og-image.jpg`) and the square logo are rendered from `tools/og.html` and `tools/logo.html`.
 
-The knot close-up on the home page is `images/heritage/knot-detail.jpg`, a 1440 × 900 crop of `knot-map.jpg` (the full 3000 px image stays for Heritage & Origins and the knot zoomer). It is about a quarter of the weight.
+The artisan photographs in `images/editorial/` are enlarged 1.5 times from the originals with a light clean-up of compression speckle and a gentle detail sharpen (pixel-level only, no generative model, so the people in them are unchanged). Do the same to any new editorial photo that fills the screen.
+
+On the home page, product cards with Etsy photos ask Etsy for the 1588 px copy on high-density screens and the 794 px copy elsewhere; if Etsy has no 1588 px copy, the card falls back to 794 px by itself (`cardImg` in `tools/build.js` and `js/main.js`).
 
 ## Local preview
 ```

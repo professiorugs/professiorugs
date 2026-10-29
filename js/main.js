@@ -239,7 +239,13 @@
 
   /* ---------- Cards ---------- */
   function altText(p) { return p.title + ", handmade " + kindText(p) + (p.type === "Wall carpet" && p.materials ? " in " + p.materials.toLowerCase() : "") + (p.dims ? ", " + dimsText(p) : ""); }
-  function card(p) {
+  // same as cardImg() in tools/build.js: the 1588 px Etsy photo on high-density screens, 794 px if it is missing
+  function cardImg(p, cls, sharp) {
+    var hi = sharp && /etsystatic\.com\/.*il_794xN/.test(p.image) ? p.image.replace("il_794xN", "il_1588xN") : "";
+    return '<img class="' + cls + '" src="' + p.image + '"' + (hi ? ' srcset="' + p.image + " 1x, " + hi + ' 2x" onerror="this.onerror=null;this.removeAttribute(\'srcset\')"' : "") +
+      ' alt="' + esc(altText(p)) + '" loading="lazy" decoding="async" referrerpolicy="no-referrer">';
+  }
+  function card(p, sharp) {
     var flag = p.tags && p.tags[0] ? '<span class="card-flag">' + esc(p.tags[0]) + "</span>" : "";
     var meta = [town(p), p.materials, p.dims ? dimsText(p) : null].filter(Boolean).join(" · ") || "Specifications on request";
     var silk = /silk/i.test(p.materials || "") ? " silk" : "";
@@ -248,7 +254,7 @@
     var remote = /^https?:/.test(p.image);
     var price = typeof p.price === "number" ? '<span class="price">' + priceText(p) + "</span>" : '<span class="price on-request">On request</span>';
     return '<a class="card reveal" href="' + rugUrl(p) + '">' +
-      '<div class="card-media' + silk + '">' + flag + '<img class="' + (remote ? "photo" : "art") + '" src="' + p.image + '" alt="' + esc(altText(p)) + '" loading="lazy" decoding="async" referrerpolicy="no-referrer"></div>' +
+      '<div class="card-media' + silk + '">' + flag + cardImg(p, remote ? "photo" : "art", sharp) + "</div>" +
       '<div class="card-body"><h3 class="card-title">' + esc(p.title) + "</h3>" + price +
       '<span class="card-meta">' + esc(meta) + "</span>" + teaser + "</div></a>";
   }
@@ -256,7 +262,7 @@
   function initFeatured() {
     $$("[data-ids]").forEach(function (el) {
       var ids = (el.getAttribute("data-ids") || "").split(",");
-      el.innerHTML = ids.map(byId).filter(Boolean).map(card).join("");
+      el.innerHTML = ids.map(byId).filter(Boolean).map(function (p) { return card(p, true); }).join("");
     });
   }
 

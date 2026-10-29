@@ -119,7 +119,14 @@ function head(o) {
 const setHead = (html, h) => html.replace(/<head>[\s\S]*?<\/head>/, h);
 
 /* ---------- Product cards (same markup as card() in js/main.js) ---------- */
-function card(p) {
+// Etsy serves each photo at 794 px and 1588 px wide: home-page cards take the sharper one on high-density
+// screens, and fall back to 794 px if a larger copy is missing.
+function cardImg(p, cls, sharp) {
+  const hi = sharp && /etsystatic\.com\/.*il_794xN/.test(p.image) ? p.image.replace("il_794xN", "il_1588xN") : "";
+  return '<img class="' + cls + '" src="' + p.image + '"' + (hi ? ' srcset="' + p.image + " 1x, " + hi + ' 2x" onerror="this.onerror=null;this.removeAttribute(\'srcset\')"' : "") +
+    ' alt="' + esc(altText(p)) + '" loading="lazy" decoding="async" referrerpolicy="no-referrer">';
+}
+function card(p, sharp) {
   const flag = p.tags && p.tags[0] ? '<span class="card-flag">' + esc(p.tags[0]) + "</span>" : "";
   const meta = [town(p), p.materials, dimsText(p)].filter(Boolean).join(" · ") || "Specifications on request";
   const silk = /silk/i.test(p.materials || "") ? " silk" : "";
@@ -128,7 +135,7 @@ function card(p) {
   const remote = /^https?:/.test(p.image);
   const price = typeof p.price === "number" ? '<span class="price">' + priceText(p) + "</span>" : '<span class="price on-request">On request</span>';
   return '<a class="card reveal" href="' + rugPath(p) + '">' +
-    '<div class="card-media' + silk + '">' + flag + '<img class="' + (remote ? "photo" : "art") + '" src="' + p.image + '" alt="' + esc(altText(p)) + '" loading="lazy" decoding="async" referrerpolicy="no-referrer"></div>' +
+    '<div class="card-media' + silk + '">' + flag + cardImg(p, remote ? "photo" : "art", sharp) + "</div>" +
     '<div class="card-body"><h3 class="card-title">' + esc(p.title) + "</h3>" + price +
     '<span class="card-meta">' + esc(meta) + "</span>" + teaser + "</div></a>";
 }
@@ -137,7 +144,7 @@ function fillCards(html) {
   return html.replace(/(<div class="product-grid"([^>]*)>)<!--cards-->[\s\S]*?<!--\/cards-->/g, (m, open, attrs) => {
     const ids = /data-ids="([^"]+)"/.exec(attrs);
     const list = ids ? ids[1].split(",").map(byId).filter(Boolean) : PRODUCTS;
-    return open + "<!--cards-->" + list.map(card).join("") + "<!--/cards-->";
+    return open + "<!--cards-->" + list.map((p) => card(p, !!ids)).join("") + "<!--/cards-->";
   });
 }
 
