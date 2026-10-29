@@ -53,7 +53,7 @@ All motion is slow and switches off for visitors who choose "reduce motion":
 2. On a rug page the main photo unrolls from the top in about a second.
 3. The flying carpet's cloth waves slowly and its fringe stirs, a little more on hover, and gold sparkles follow the mouse.
 4. A short gold thread draws itself under section titles.
-5. A soft candle glow flickers in the Cappadocia section on the home page, and three small hot-air balloons drift in its sky with their burners flickering (keep it to three; the balloon is the `#balloon` symbol in `index.html`, its colours and places are `.balloon--1` to `--3` in `css/style.css`).
+5. A soft candle glow flickers in the Cappadocia section on the home page, and three small hot-air balloons drift in its sky as dark silhouettes in the tones of the fairy chimneys, lit only by their flickering burners (keep it to three and keep them uncoloured; the balloon is the `#balloon` symbol in `index.html`, its colours and places are `.balloon--1` to `--3` in `css/style.css`).
 6. Numbers with `data-count` (knot counts, Hereke's 100+) count up when they come into view. Beside Hereke's 100+, a square centimetre fills with ten rows of ten knots as the number counts.
 7. Heritage & Origins: in the Prologue a twisted thread draws down the timeline as you scroll and ties a small knot at each date; in Chapter I three Turkish knots are tied on the loom, a weft is laid over them and beaten down, again and again; in Chapter IV the naqsheh (knot chart) fills in a row at a time from the bottom up. The drawings are inline SVG in `heritage/index.html`; the timing is in `initTimeline`, `initKnotFig` and `initNaqsheh` in `js/main.js`.
 
