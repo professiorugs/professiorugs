@@ -901,13 +901,15 @@ h2.gold-thread.drawn::after { transform: scaleX(1); }
 }
 @media (prefers-reduced-motion: reduce) { .balloon, .balloon-flame, .balloon-lit { animation: none; } }
 
-/* 6c. Our Story opens on the declaration: the wordmark surfaces out of the blank page, then the promise follows */
+/* 6c. Our Story opens on the family banner, which surfaces out of the blank page, then the declaration follows */
+.story-banner { position: relative; overflow: hidden; background: var(--cream); }
+.story-banner img { display: block; width: 100%; height: auto; min-height: 180px; aspect-ratio: 4 / 1; object-fit: cover; object-position: 50% 50%;
+  animation: story-surface 2.4s var(--ease) .1s both; }
 .story-intro { padding-top: clamp(64px, 9vw, 140px); }
-.story-intro .wordmark-lg { animation: story-surface 2.2s var(--ease) .15s both; }
-.story-intro .statement { animation: story-rise 1.8s var(--ease) .9s both; }
-@keyframes story-surface { from { opacity: 0; filter: blur(8px); transform: scale(.97); } to { opacity: 1; filter: none; transform: none; } }
+.story-intro .statement { animation: story-rise 1.8s var(--ease) 1s both; }
+@keyframes story-surface { from { opacity: 0; filter: blur(8px); transform: scale(1.03); } to { opacity: 1; filter: none; transform: none; } }
 @keyframes story-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .story-intro .wordmark-lg, .story-intro .statement { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .story-banner img, .story-intro .statement { animation: none; } }
 
 /* 6. A soft candle glow in the Cappadocia section */
 .cap-glow { animation: candle 9s ease-in-out infinite; }
