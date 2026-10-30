@@ -157,14 +157,14 @@ const PAGES = [
     file: "index.html", path: "/",
     title: "Professio | Hereke & Kayseri Silk Rugs, Tabriz Wall Carpets",
     ogTitle: "Professio · Handmade Hereke & Kayseri Silk Rugs",
-    description: "Handmade Hereke and Kayseri silk rugs, each knotted 10 × 10 per cm, and pictorial wall carpets from Tabriz. One of a kind, certified, shipped worldwide.",
+    description: "Handmade Hereke and Kayseri silk rugs, knotted by hand in Türkiye, and pictorial wall carpets from Tabriz. One of a kind, certified, shipped worldwide.",
     preload: ['<link rel="preload" as="image" href="/images/editorial/artisan-lean.jpg" media="(min-width: 761px)" fetchpriority="high">', '<link rel="preload" as="image" href="/images/editorial/artisan-reach.jpg" media="(max-width: 760px)" fetchpriority="high">'],
     jsonld: graph(ORG, WEBSITE, { "@type": "WebPage", "@id": SITE + "/#webpage", url: SITE + "/", name: "Professio | Hereke & Kayseri Silk Rugs, Tabriz Wall Carpets", isPartOf: { "@id": SITE + "/#website" }, about: { "@id": SITE + "/#org" }, inLanguage: "en" })
   },
   {
     file: "rugs/index.html", path: "/rugs/",
     title: "Hereke & Kayseri Silk Rugs, Tabriz Wall Carpets | Professio",
-    description: "Shop one-of-a-kind Hereke and Kayseri silk rugs, all hand-knotted 10 × 10 per cm, and Tabriz pictorial wall carpets: medallion, runner, round and framed pieces.",
+    description: "Shop one-of-a-kind Hereke and Kayseri silk rugs, all hand-knotted in Türkiye, and Tabriz pictorial wall carpets: medallion, runner, round and framed pieces.",
     jsonld: graph(
       { "@type": "CollectionPage", "@id": SITE + "/rugs/#webpage", url: SITE + "/rugs/", name: "Hereke & Kayseri Silk Rugs, Tabriz Wall Carpets · The Professio Collection", isPartOf: { "@id": SITE + "/#website" }, inLanguage: "en",
         mainEntity: { "@type": "ItemList", numberOfItems: PRODUCTS.length, itemListElement: PRODUCTS.map((p, i) => ({ "@type": "ListItem", position: i + 1, url: SITE + rugPath(p), name: p.title })) } },
@@ -182,7 +182,7 @@ const PAGES = [
   {
     file: "silk-rug-guide/index.html", path: "/silk-rug-guide/",
     title: "Silk Rug Buying Guide: Real Silk, Knots & Price | Professio",
-    description: "How to buy a handmade silk rug: spot real silk vs art silk, read knot density (10'luk, 15'lik), compare Hereke, Kayseri and Tabriz rugs, understand the price.",
+    description: "How to buy a handmade silk rug: spot real silk vs art silk, read knot density, compare Hereke, Kayseri and Tabriz rugs, understand the price.",
     ogType: "article",
     jsonld: null // filled below from the page's own FAQ
   },

@@ -37,7 +37,7 @@
     var t = town(p) ? town(p) + " " : "";
     return p.type === "Wall carpet" ? t + "wall carpet" : t + (/silk/i.test(p.materials || "") ? "silk rug" : "rug");
   }
-  // total knots at the stated density (10 × 10 per cm over 110 × 75 cm = 825,000) and the trade name
+  // total knots at the stated density, for pieces that state one, and the density per square inch
   function knotTotal(p) { return (window.PROFESSIO_KNOTS(p) || {}).total || null; }
   function knotNote(p) { return (window.PROFESSIO_KNOTS(p) || {}).note || null; }
   var reduceMotion = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);

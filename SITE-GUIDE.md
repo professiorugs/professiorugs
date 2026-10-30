@@ -39,7 +39,7 @@ A rug's address comes from its title and origin: "Midnight Bloom" from Hereke be
 ## Rug facts
 - `type`: `"Floor rug"` or `"Wall carpet"`.
 - `origin`: floor rugs are `"Hereke, Türkiye"` or `"Kayseri, Türkiye"`; wall carpets are `"Tabriz, Iran"`. Floor rugs also use `category: "Hereke Silk"` or `"Kayseri Silk"`, which drives the collection filter.
-- `knots`: every floor rug is `"10 × 10 per cm (100 per cm²)"`, the Turkish "10'luk". The rug page shows the trade name, the density per square inch and the total number of knots (110 × 75 cm at 10 × 10 is about 825,000). For a 15'lik write `"15 × 15 per cm (225 per cm²)"`.
+- `knots`: left out on every rug for now (the "10'luk" wording was removed at Enes's request, October 2026). Only add a density such as `"12 × 12 per cm (144 per cm²)"` once Professio confirms it for that piece; the rug page then shows it, the density per square inch and the total number of knots.
 - `price`: a round number in US dollars (5600, 13500). Etsy checkout always shows the price set on the Etsy listing, so keep the two the same.
 
 ## The flying carpet
