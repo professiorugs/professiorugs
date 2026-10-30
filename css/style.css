@@ -901,11 +901,15 @@ h2.gold-thread.drawn::after { transform: scaleX(1); }
 }
 @media (prefers-reduced-motion: reduce) { .balloon, .balloon-flame, .balloon-lit { animation: none; } }
 
-/* 6c. Our Story opens on the family banner, which surfaces out of the blank page, then the declaration follows */
+/* 6c. Our Story opens on the painted sky of the family banner (lettering removed), which surfaces out of the blank page and dissolves into it; then the declaration follows */
 .story-banner { position: relative; overflow: hidden; background: var(--cream); }
-.story-banner img { display: block; width: 100%; height: auto; min-height: 180px; aspect-ratio: 4 / 1; object-fit: cover; object-position: 50% 50%;
+.story-banner img { display: block; width: 100%; height: clamp(220px, 30vw, 440px); object-fit: cover; object-position: 50% 45%;
+  -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent 98%); mask-image: linear-gradient(to bottom, #000 45%, transparent 98%);
   animation: story-surface 2.4s var(--ease) .1s both; }
-.story-intro { padding-top: clamp(64px, 9vw, 140px); }
+/* "Professio" in the declaration is set in the wordmark's own lettering: the flourishes hang below its baseline */
+.wordmark-inline { display: inline-block; height: 1.2em; width: 5.04em; vertical-align: -.42em; margin: 0 .06em -.3em 0; background-color: var(--espresso);
+  -webkit-mask: url(../images/brand/wordmark.png?v=2) center / contain no-repeat; mask: url(../images/brand/wordmark.png?v=2) center / contain no-repeat; }
+.story-intro { padding-top: clamp(8px, 2vw, 32px); }
 .story-intro .statement { animation: story-rise 1.8s var(--ease) 1s both; }
 @keyframes story-surface { from { opacity: 0; filter: blur(8px); transform: scale(1.03); } to { opacity: 1; filter: none; transform: none; } }
 @keyframes story-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
