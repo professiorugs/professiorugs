@@ -708,6 +708,13 @@ fieldset.field { border: 0; padding: 0; margin: 0; }
   background: radial-gradient(120% 90% at 50% 42%, rgba(36, 25, 20, 0) 55%, rgba(36, 25, 20, .38) 100%);
 }
 
+/* Photo credit on Doruk's photographs: tiny and faint, bottom-right, readable only when you look for it (not on the page-top headers) */
+.media:has(img[src*="/editorial/artisan"])::before {
+  content: "Captured by Doruk \015E en" / ""; position: absolute; right: 10px; bottom: 8px; z-index: 2; pointer-events: none;
+  font-family: var(--sans); font-size: 8px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255, 255, 255, .3);
+}
+main > section:first-child .media::before { content: none; }
+
 /* Silk light-sweep on hover */
 .card-media.silk::after, .pdp-main.silk::after {
   content: ""; position: absolute; inset: -20% -60%; z-index: 1; pointer-events: none;
