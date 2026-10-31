@@ -158,7 +158,7 @@ const PAGES = [
     title: "Professio | Hereke & Kayseri Silk Rugs, Tabriz Wall Carpets",
     ogTitle: "Professio · Handmade Hereke & Kayseri Silk Rugs",
     description: "Handmade Hereke and Kayseri silk rugs, knotted by hand in Türkiye, and pictorial wall carpets from Tabriz. One of a kind, certified, shipped worldwide.",
-    preload: ['<link rel="preload" as="image" href="/images/editorial/artisan-lean.jpg" media="(min-width: 761px)" fetchpriority="high">', '<link rel="preload" as="image" href="/images/editorial/artisan-reach.jpg" media="(max-width: 760px)" fetchpriority="high">'],
+    preload: ['<link rel="preload" as="image" href="/images/editorial/artisan-lean.jpg" fetchpriority="high">'],
     jsonld: graph(ORG, WEBSITE, { "@type": "WebPage", "@id": SITE + "/#webpage", url: SITE + "/", name: "Professio | Hereke & Kayseri Silk Rugs, Tabriz Wall Carpets", isPartOf: { "@id": SITE + "/#website" }, about: { "@id": SITE + "/#org" }, inLanguage: "en" })
   },
   {
