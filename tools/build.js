@@ -31,7 +31,9 @@ const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&":
 // fetches the new stylesheet and scripts together instead of mixing old and new.
 const VER = {};
 for (const f of ["css/style.css", "js/products.js", "js/main.js"]) VER[f] = crypto.createHash("sha1").update(read(f)).digest("hex").slice(0, 10);
-const versioned = (html) => html.replace(/(src|href)="\/(css\/style\.css|js\/products\.js|js\/main\.js)(\?v=[\w]+)?"/g, (m, a, f) => a + '="/' + f + "?v=" + VER[f] + '"');
+// Cloudflare Web Analytics (cookie-free visitor counts), on every real page; the redirect stubs stay without it
+const BEACON = "<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{\"token\": \"df591e70ffc246458cf74a4648f3c5bb\"}'></script><!-- End Cloudflare Web Analytics -->";
+const versioned = (html) => (html.includes("cloudflareinsights") ? html : html.replace("</body>", BEACON + "\n</body>")).replace(/(src|href)="\/(css\/style\.css|js\/products\.js|js\/main\.js)(\?v=[\w]+)?"/g, (m, a, f) => a + '="/' + f + "?v=" + VER[f] + '"');
 const abs = (u) => (/^https?:/.test(u) ? u : SITE + (u.startsWith("/") ? u : "/" + u));
 const rugPath = (p) => "/rugs/" + slug(p) + "/";
 const clip = (s, n) => { s = String(s || "").replace(/\s+/g, " ").trim(); if (s.length <= n) return s; const cut = s.slice(0, n - 1); return cut.slice(0, cut.lastIndexOf(" ")).replace(/[,;:.\s]+$/, "") + "…"; };
