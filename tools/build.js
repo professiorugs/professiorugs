@@ -25,6 +25,22 @@ const slug = window.PROFESSIO_SLUG;
 const knotFacts = (p) => window.PROFESSIO_KNOTS(p) || {};
 
 const read = (f) => fs.readFileSync(path.join(ROOT, f), "utf8");
+// A page's date (sitemap lastmod, Article dateModified) only moves when the page itself changes.
+// Pages are written with DATE_TOKEN in place of the date; emit() compares the new page with the
+// one on disk, ignoring the date and the ?v= stamps, and keeps the old date when nothing else differs.
+const DATE_TOKEN = "@@PAGE-DATE@@";
+const OLD_DATES = {};
+try { read("sitemap.xml").replace(/<loc>([^<]+)<\/loc><lastmod>([\d-]+)<\/lastmod>/g, (m, u, d) => { OLD_DATES[u] = d; }); } catch (e) {}
+const PAGE_DATES = {};
+const bare = (h) => h.replace(/"dateModified":"[^"]*"/g, "").replace(/\?v=\w+/g, "");
+function emit(file, urlPath, html) {
+  let old = null;
+  try { old = read(file); } catch (e) {}
+  const kept = OLD_DATES[SITE + urlPath];
+  const date = old !== null && kept && bare(old) === bare(html) ? kept : TODAY;
+  PAGE_DATES[urlPath] = date;
+  write(file, html.split(DATE_TOKEN).join(date));
+}
 const write = (f, s) => { fs.mkdirSync(path.dirname(path.join(ROOT, f)), { recursive: true }); fs.writeFileSync(path.join(ROOT, f), s); };
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 // Each page asks for /css/style.css?v=<hash>, so after an update every browser
@@ -73,7 +89,7 @@ const graph = (...nodes) => ld({ "@context": "https://schema.org", "@graph": nod
 /* ---------- <head> ---------- */
 // Rug pages: keep the main photo hidden until it can unroll (js/main.js), with a safety timeout.
 const UNROLL = '<script>try{if(!matchMedia("(prefers-reduced-motion: reduce)").matches){var d=document.documentElement;d.classList.add("unroll-pending");setTimeout(function(){d.classList.remove("unroll-pending")},2500)}}catch(e){}</script>';
-const INTRO = '<script>try{if((/[?&]intro\\b/.test(location.search)||!sessionStorage.getItem("professio.intro"))&&!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("intro-pending")}catch(e){}</script>';
+const INTRO = '<script>try{if((/[?&]intro\\b/.test(location.search)||!sessionStorage.getItem("professio.intro"))&&!matchMedia("(prefers-reduced-motion: reduce)").matches){var d=document.documentElement;d.classList.add("intro-pending");setTimeout(function(){d.classList.remove("intro-pending")},4000)}}catch(e){}</script>'; // the timer lifts the cover if js/main.js never arrives
 
 function head(o) {
   const url = SITE + o.path;
@@ -127,8 +143,14 @@ function sharpSet(src) {
   if (!/etsystatic\.com\/.*il_794xN/.test(src)) return "";
   return ' srcset="' + src + " 1x, " + src.replace("il_794xN", "il_1588xN") + ' 2x" onerror="this.onerror=null;this.removeAttribute(\'srcset\')"';
 }
+// The house's own photos have an 800 px copy for the grids (images/collection/cards/), full size if one is missing
+// (same as cardSrc() in js/main.js).
+function cardSrc(src) {
+  const m = /^\/images\/collection\/([^/]+\.jpg)$/.exec(src);
+  return m && fs.existsSync(path.join(ROOT, "images/collection/cards", m[1])) ? "/images/collection/cards/" + m[1] + '" onerror="this.onerror=null;this.src=\'' + src + "\'" : src;
+}
 function cardImg(p, cls, sharp) {
-  return '<img class="' + cls + '" src="' + p.image + '"' + (sharp ? sharpSet(p.image) : "") +
+  return '<img class="' + cls + '" src="' + cardSrc(p.image) + '"' + (sharp ? sharpSet(p.image) : "") +
     ' alt="' + esc(altText(p)) + '" loading="lazy" decoding="async" referrerpolicy="no-referrer">';
 }
 function card(p, sharp) {
@@ -144,6 +166,8 @@ function card(p, sharp) {
     '<div class="card-body"><h3 class="card-title">' + esc(p.title) + "</h3>" + price +
     '<span class="card-meta">' + esc(meta) + "</span>" + teaser + "</div></a>";
 }
+// a catalogue number such as "No. E-0382"; pieces still waiting for one show no reference (same as refNo() in js/main.js)
+const refNo = (p) => (/^No\./.test(p.ref || "") ? p.ref : "");
 const byId = (id) => PRODUCTS.find((p) => p.id === id);
 function fillCards(html) {
   return html.replace(/(<div class="product-grid"([^>]*)>)<!--cards-->[\s\S]*?<!--\/cards-->/g, (m, open, attrs) => {
@@ -178,7 +202,7 @@ const PAGES = [
     description: "A guide to hand-knotted rugs: the Turkish and Persian knots, Hereke silk, Kayseri and Anatolian weaving, Tabriz and the Persian workshops, Turkmen guls.",
     ogType: "article",
     jsonld: graph(
-      { "@type": "Article", "@id": SITE + "/heritage/#article", headline: "One knot, a thousand years: Turkish, Hereke and Persian rugs explained", description: "The Turkish and Persian knots, Hereke silk, Kayseri and Anatolian weaving, Persian city workshops, Turkmen guls and the pictorial rug.", image: SITE + "/images/heritage/knot-map.jpg", author: { "@id": SITE + "/#org" }, publisher: { "@id": SITE + "/#org" }, mainEntityOfPage: SITE + "/heritage/", inLanguage: "en", dateModified: TODAY },
+      { "@type": "Article", "@id": SITE + "/heritage/#article", headline: "One knot, a thousand years: Turkish, Hereke and Persian rugs explained", description: "The Turkish and Persian knots, Hereke silk, Kayseri and Anatolian weaving, Persian city workshops, Turkmen guls and the pictorial rug.", image: SITE + "/images/heritage/knot-map.jpg", author: { "@id": SITE + "/#org" }, publisher: { "@id": SITE + "/#org" }, mainEntityOfPage: SITE + "/heritage/", inLanguage: "en", dateModified: DATE_TOKEN },
       crumbs([["Professio", "/"], ["Heritage & Origins", "/heritage/"]]))
   },
   {
@@ -223,13 +247,13 @@ for (const pg of PAGES) {
     const faq = faqFrom(html);
     if (pg.path === "/trade/") pg.jsonld = graph(Object.assign({ "@id": SITE + "/trade/#faq", url: SITE + "/trade/", name: pg.title }, faq), crumbs([["Professio", "/"], ["Trade & Wholesale", "/trade/"]]));
     else pg.jsonld = graph(
-      { "@type": "Article", "@id": SITE + pg.path + "#article", headline: "How to buy a handmade silk rug", description: pg.description, image: SITE + "/images/collection/midnight-bloom.jpg", author: { "@id": SITE + "/#org" }, publisher: { "@id": SITE + "/#org" }, mainEntityOfPage: SITE + pg.path, inLanguage: "en", dateModified: TODAY },
+      { "@type": "Article", "@id": SITE + pg.path + "#article", headline: "How to buy a handmade silk rug", description: pg.description, image: SITE + "/images/collection/midnight-bloom.jpg", author: { "@id": SITE + "/#org" }, publisher: { "@id": SITE + "/#org" }, mainEntityOfPage: SITE + pg.path, inLanguage: "en", dateModified: DATE_TOKEN },
       Object.assign({ "@id": SITE + pg.path + "#faq" }, faq),
       crumbs([["Professio", "/"], ["Silk Rug Buying Guide", pg.path]]));
   }
   html = setHead(html, head(pg));
   html = fillCards(html);
-  write(pg.file, versioned(html));
+  emit(pg.file, pg.path, versioned(html));
 }
 
 /* ---------- One page per rug ---------- */
@@ -251,14 +275,16 @@ for (const p of PRODUCTS) {
 
   const node = typeof p.price === "number"
     ? {
-        "@type": "Product", "@id": SITE + url + "#product", name: p.title, description: story || p.story, image: images, sku: p.ref, url: SITE + url,
+        "@type": "Product", "@id": SITE + url + "#product", name: p.title, description: story || p.story, image: images, sku: refNo(p) || p.id, url: SITE + url,
         brand: { "@type": "Brand", name: "Professio" }, category: "Home & Garden > Decor > Rugs", material: p.materials || undefined,
         size: dimsText(p) || undefined, countryOfOrigin: country ? { "@type": "Country", name: country } : undefined,
         additionalProperty: props.length ? props : undefined,
         offers: {
           "@type": "Offer", url: SITE + url, priceCurrency: "USD", price: Math.round(p.price).toString(),
           availability: "https://schema.org/InStock", itemCondition: "https://schema.org/NewCondition",
-          seller: { "@id": SITE + "/#org" }
+          seller: { "@id": SITE + "/#org" },
+          // insured worldwide shipping is included in the price (the same promise the rug page makes)
+          shippingDetails: { "@type": "OfferShippingDetails", shippingRate: { "@type": "MonetaryAmount", value: 0, currency: "USD" } }
         }
       }
     : { "@type": "VisualArtwork", "@id": SITE + url + "#artwork", name: p.title, description: story || p.story, image: images, artform: p.type === "Wall carpet" ? "Hand-knotted pictorial wall carpet" : "Hand-knotted rug", artMedium: p.materials || undefined, url: SITE + url, creator: { "@id": SITE + "/#org" },
@@ -277,7 +303,7 @@ for (const p of PRODUCTS) {
     '<span class="eyebrow">' + esc(p.category) + "</span><h1>" + esc(p.title) + "</h1>" +
     '<p class="pdp-sub">' + esc(p.subtitle) + '</p><div class="pdp-price">' + priceText(p) + "</div>" +
     "<p>" + esc(p.story) + "</p>" +
-    '<div class="placard"><div class="placard-head"><span class="serif">' + esc(p.title) + '</span><span class="inv">' + esc(p.ref) + "</span></div><dl>" +
+    '<div class="placard"><div class="placard-head"><span class="serif">' + esc(p.title) + '</span><span class="inv">' + esc(refNo(p)) + "</span></div><dl>" +
     placardRow("Dimensions", dimsText(p)) + placardRow("Materials", p.materials) + (p.dyes ? placardRow("Dyes", p.dyes) : "") +
     placardRow("Technique", p.technique || "Handmade") + placardRow("Knot density", p.knots, kf.note) +
     (kf.total ? "<dt>Knots</dt><dd>About " + kf.total.toLocaleString("en-US") + "<small>Each one tied by hand</small></dd>" : "") +
@@ -293,7 +319,7 @@ for (const p of PRODUCTS) {
     .replace('<section class="soul" id="soulSection" hidden>', p.soul ? '<section class="soul" id="soulSection">' : '<section class="soul" id="soulSection" hidden>')
     .replace('<p class="soul-text" id="soulText"></p>', '<p class="soul-text" id="soulText">' + esc(p.soul || "") + "</p>");
   html = setHead(html, head(pg));
-  write("rugs/" + slug(p) + "/index.html", versioned(html));
+  emit("rugs/" + slug(p) + "/index.html", url, versioned(html));
 }
 
 /* ---------- Old .html addresses ---------- */
@@ -317,11 +343,11 @@ redirect("product.html", "/rugs/", "var m=" + JSON.stringify(map) + ',i=new URLS
 const entries = [
   ["/", "1.0", "weekly"], ["/rugs/", "0.9", "weekly"], ["/silk-rug-guide/", "0.8", "monthly"], ["/heritage/", "0.8", "monthly"],
   ["/trade/", "0.7", "monthly"], ["/our-story/", "0.6", "monthly"]
-].map(([u, pr, ch]) => "  <url><loc>" + SITE + u + "</loc><lastmod>" + TODAY + "</lastmod><changefreq>" + ch + "</changefreq><priority>" + pr + "</priority></url>");
+].map(([u, pr, ch]) => "  <url><loc>" + SITE + u + "</loc><lastmod>" + (PAGE_DATES[u] || TODAY) + "</lastmod><changefreq>" + ch + "</changefreq><priority>" + pr + "</priority></url>");
 for (const p of PRODUCTS) {
   const imgs = [p.image].concat((p.images || []).filter((u) => u !== p.image)).slice(0, 5)
     .map((u) => "<image:image><image:loc>" + esc(abs(u)) + "</image:loc></image:image>").join("");
-  entries.push("  <url><loc>" + SITE + rugPath(p) + "</loc><lastmod>" + TODAY + "</lastmod><changefreq>monthly</changefreq><priority>" + (typeof p.price === "number" ? "0.8" : "0.6") + "</priority>" + imgs + "</url>");
+  entries.push("  <url><loc>" + SITE + rugPath(p) + "</loc><lastmod>" + (PAGE_DATES[rugPath(p)] || TODAY) + "</lastmod><changefreq>monthly</changefreq><priority>" + (typeof p.price === "number" ? "0.8" : "0.6") + "</priority>" + imgs + "</url>");
 }
 write("sitemap.xml", '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n' + entries.join("\n") + "\n</urlset>\n");
 write("robots.txt", "User-agent: *\nAllow: /\nDisallow: /tools/\n\nSitemap: " + SITE + "/sitemap.xml\n");
