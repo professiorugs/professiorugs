@@ -85,7 +85,12 @@ The artisan photographs in `images/editorial/` are enlarged 1.5 times from the o
 
 On the home page and every rug page, Etsy photos ask Etsy for the 1588 px copy on high-density screens and the 794 px copy elsewhere; if Etsy has no 1588 px copy, the photo falls back to 794 px by itself (`sharpSet` in `tools/build.js` and `js/main.js`).
 
-The house's own rug photos in `images/collection/` are enhanced the same way: the Tabriz wall carpets are cut again from the lossless catalogue pages and enlarged 2 times, and the Midnight Bloom photos are exported at 1400 px from the 1588 px originals. Each has a 320 px copy in `images/collection/thumbs/` for the gallery strip and the Your Collection drawer. When you add a photo, add its thumb too (if one is missing, the full photo is used).
+The house's own rug photos in `images/collection/` are enhanced the same way: the Tabriz wall carpets are cut again from the lossless catalogue pages and enlarged 2 times, and the Midnight Bloom photos are exported at 1400 px from the 1588 px originals. Each has a 320 px copy in `images/collection/thumbs/` for the gallery strip and the Your Collection drawer. When you add a photo, add its thumb too (if one is missing, the full photo is used). A rug's main photo also has an 800 px copy in `images/collection/cards/` (JPEG quality 74), which the cards in the collection and home page grids use; add one for a new main photo, or the card falls back to the full photo.
+
+## Dates, references and shipping data
+- The sitemap's `lastmod` and the articles' `dateModified` only move for a page whose own content changed; a build that changes nothing, or only the stylesheet and scripts, keeps every date (`emit` in `tools/build.js`).
+- A `ref` that does not begin with `No.` (such as `"Special Selection"`) is not shown as a reference number on the placard, in the drawer or in enquiries. A rug with `materials: null` hides the "What it is made of" section until its fibre is confirmed.
+- Priced rugs tell search engines that shipping is free (`shippingDetails` in `tools/build.js`), matching the "insured worldwide shipping is included" line on the page. A returns policy is not stated yet; add `hasMerchantReturnPolicy` there once Professio decides one.
 
 ## Local preview
 ```

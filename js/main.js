@@ -43,6 +43,9 @@
   var reduceMotion = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
   var slug = window.PROFESSIO_SLUG;
   function rugUrl(p) { return "/rugs/" + slug(p) + "/"; }
+  // a catalogue number such as "No. E-0382"; pieces still waiting for one show no reference
+  function refNo(p) { return /^No\./.test(p.ref || "") ? p.ref : ""; }
+  function named(p) { return p.title + (refNo(p) ? " (" + refNo(p) + ")" : ""); }
   function byId(id) { for (var i = 0; i < PRODUCTS.length; i++) if (PRODUCTS[i].id === id) return PRODUCTS[i]; return null; }
 
   /* ---------- Collection (saved pieces) ---------- */
@@ -129,7 +132,7 @@
     body.innerHTML = items.map(function (p) {
       return '<div class="drawer-item">' +
         '<a class="thumb" href="' + rugUrl(p) + '">' + thumbImg(p.image) + ' alt="" referrerpolicy="no-referrer"></a>' +
-        '<div><h4>' + esc(p.title) + '</h4><div class="small">' + esc(p.ref) + (p.dims ? " · " + dimsText(p) : "") + '</div><button data-remove="' + p.id + '">Remove</button></div>' +
+        '<div><h4>' + esc(p.title) + '</h4><div class="small">' + esc([refNo(p), p.dims ? dimsText(p) : ""].filter(Boolean).join(" · ")) + '</div><button data-remove="' + p.id + '">Remove</button></div>' +
         '<div class="price">' + (typeof p.price === "number" ? priceText(p) : "") + "</div>" +
       "</div>";
     }).join("");
@@ -148,8 +151,24 @@
     var c = $("#bagCount"); if (!c) return;
     var n = readCollection().length; c.textContent = n ? "(" + n + ")" : "";
   }
-  function openDrawer() { document.body.classList.add("drawer-open"); $("#drawer").setAttribute("aria-hidden", "false"); }
-  function closeDrawer() { document.body.classList.remove("drawer-open"); $("#drawer").setAttribute("aria-hidden", "true"); }
+  var drawerFrom = null; // what had the focus when the drawer opened
+  function openDrawer() {
+    if (!document.body.classList.contains("drawer-open")) drawerFrom = document.activeElement;
+    document.body.classList.add("drawer-open"); $("#drawer").setAttribute("aria-hidden", "false");
+    $("#closeDrawer").focus();
+  }
+  function closeDrawer() {
+    if (!document.body.classList.contains("drawer-open")) return;
+    document.body.classList.remove("drawer-open"); $("#drawer").setAttribute("aria-hidden", "true");
+    if (drawerFrom && document.contains(drawerFrom) && drawerFrom.focus) drawerFrom.focus();
+    drawerFrom = null;
+  }
+  function closeMenu() {
+    if (!document.body.classList.contains("menu-open")) return;
+    document.body.classList.remove("menu-open");
+    $("#menuToggle").setAttribute("aria-expanded", "false");
+    $("#siteHeader").classList.toggle("is-scrolled", window.scrollY > 40);
+  }
   function toast(msg, ms) {
     var t = $("#toast"); t.textContent = msg; t.classList.add("show");
     clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove("show"); }, ms || 2600);
@@ -175,7 +194,7 @@
     $("#openDrawer").addEventListener("click", openDrawer);
     $("#closeDrawer").addEventListener("click", closeDrawer);
     $("#drawerBackdrop").addEventListener("click", closeDrawer);
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeDrawer(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") { closeDrawer(); closeMenu(); } });
     renderDrawer(); updateCount();
   }
 
@@ -249,8 +268,13 @@
     var m = /^\/images\/collection\/([^/]+\.jpg)$/.exec(src);
     return m ? '<img src="/images/collection/thumbs/' + m[1] + '" onerror="this.onerror=null;this.src=\'' + src + '\'"' : '<img src="' + src + '"';
   }
+  // the house's own photos have an 800 px copy for the grids (images/collection/cards/), full size if one is missing
+  function cardSrc(src) {
+    var m = /^\/images\/collection\/([^/]+\.jpg)$/.exec(src);
+    return m ? '/images/collection/cards/' + m[1] + '" onerror="this.onerror=null;this.src=\'' + src + '\'' : src;
+  }
   function cardImg(p, cls, sharp) {
-    return '<img class="' + cls + '" src="' + p.image + '"' + (sharp ? sharpSet(p.image) : "") +
+    return '<img class="' + cls + '" src="' + cardSrc(p.image) + '"' + (sharp ? sharpSet(p.image) : "") +
       ' alt="' + esc(altText(p)) + '" loading="lazy" decoding="async" referrerpolicy="no-referrer">';
   }
   function card(p, sharp) {
@@ -310,7 +334,7 @@
       });
       $(".filter-panel", g).addEventListener("click", function (e) { e.stopPropagation(); });
     });
-    document.addEventListener("click", function () { $$(".filter-group.open").forEach(function (o) { o.classList.remove("open"); }); });
+    document.addEventListener("click", function () { $$(".filter-group.open").forEach(function (o) { o.classList.remove("open"); $(".filter-btn", o).setAttribute("aria-expanded", "false"); }); });
 
     bar.addEventListener("change", function (e) {
       var i = e.target; if (!i.dataset.group) return;
@@ -334,7 +358,7 @@
       if (sort === "price-asc") list = list.slice().sort(function (a, b) { return (a.price || 1e9) - (b.price || 1e9); });
       if (sort === "title") list = list.slice().sort(function (a, b) { return a.title.localeCompare(b.title); });
 
-      grid.innerHTML = list.length ? list.map(card).join("") :
+      grid.innerHTML = list.length ? list.map(function (p) { return card(p); }).join("") :
         '<div class="empty-state"><p class="lede">No pieces match this selection.</p><button class="link-arrow" id="clearAll">Clear filters</button></div>';
       $("#resultsCount").textContent = list.length + (list.length === 1 ? " piece" : " pieces");
 
@@ -419,7 +443,7 @@
         "</div>" +
         (p.etsy ? '<p class="small" style="margin-top:-4px">Secure checkout through the Professio atelier on Etsy. Prefer to buy directly? <a href="/trade/?type=acquire&pieces=' + p.id + '" style="text-decoration:underline">Request a private acquisition</a>.</p>' : "") +
         '<div class="placard">' +
-          '<div class="placard-head"><span class="serif">' + esc(p.title) + '</span><span class="inv">' + esc(p.ref) + "</span></div>" +
+          '<div class="placard-head"><span class="serif">' + esc(p.title) + '</span><span class="inv">' + esc(refNo(p)) + "</span></div>" +
           "<dl>" +
             dimsCell() +
             placardRow("Materials", p.materials) +
@@ -526,6 +550,9 @@
     });
 
     // Materials
+    // pieces whose fibre is not yet confirmed make no claim about it
+    var matSection = $("#materials").closest("section");
+    if (matSection) matSection.hidden = !p.materials;
     var keys = p.materials === "Pure Silk" ? ["silk", "dye"] : ["wool", "silk", "dye"];
     $("#materials").innerHTML = keys.map(function (k) {
       var m = MATERIALS[k];
@@ -537,7 +564,7 @@
     // Related
     var rel = PRODUCTS.filter(function (x) { return x.id !== p.id && x.category === p.category; });
     if (rel.length < 3) rel = rel.concat(PRODUCTS.filter(function (x) { return x.id !== p.id && rel.indexOf(x) === -1; }));
-    $("#related").innerHTML = rel.slice(0, 3).map(card).join("");
+    $("#related").innerHTML = rel.slice(0, 3).map(function (x) { return card(x); }).join("");
   }
 
   /* ---------- Accordions ---------- */
@@ -744,16 +771,20 @@
     if (type) { var r = $('input[name="inquiry_type"][value="' + type + '"]'); if (r) r.checked = true; }
     var pieces = (params.get("pieces") || "").split(",").map(byId).filter(Boolean);
     var pf = $("#piecesField");
-    if (pf && pieces.length) pf.value = pieces.map(function (p) { return p.title + " (" + p.ref + ")"; }).join("; ");
+    if (pf && pieces.length) pf.value = pieces.map(named).join("; ");
     if (!pieces.length && type === "acquire") {
       var saved = readCollection().map(byId).filter(Boolean);
-      if (pf && saved.length) pf.value = saved.map(function (p) { return p.title + " (" + p.ref + ")"; }).join("; ");
+      if (pf && saved.length) pf.value = saved.map(named).join("; ");
     }
     syncType();
     $$('input[name="inquiry_type"]').forEach(function (r) { r.addEventListener("change", syncType); });
     function syncType() {
       var v = ($('input[name="inquiry_type"]:checked') || {}).value;
-      $$("[data-show]").forEach(function (el) { el.hidden = el.dataset.show.split(" ").indexOf(v) === -1; });
+      $$("[data-show]").forEach(function (el) {
+        el.hidden = el.dataset.show.split(" ").indexOf(v) === -1;
+        // fields the visitor cannot see are neither sent nor validated
+        $$("input, select, textarea", el).forEach(function (i) { i.disabled = el.hidden; });
+      });
     }
 
     $$("form[data-form]").forEach(function (f) {
@@ -781,7 +812,7 @@
       }
       var kind = ($('input[name="inquiry_type"]:checked', f) || {}).value, lines = [];
       $$("input, select, textarea", f).forEach(function (el) {
-        if (!el.name || el.name.charAt(0) === "_" || el.closest("[hidden]") || (el.type === "radio" && !el.checked)) return;
+        if (!el.name || el.name.charAt(0) === "_" || el.disabled || el.closest("[hidden]") || (el.type === "radio" && !el.checked)) return;
         var v = String(el.value || "").trim(); if (!v) return;
         if (el.name === "message") lines.push("", LABELS.message + ":", v);
         else lines.push((LABELS[el.name] || el.name) + ": " + (el.name === "inquiry_type" ? KINDS[v] || v : v));
